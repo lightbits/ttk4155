@@ -56,7 +56,7 @@ void uart_initialize()
 int main (void)
 {
 	// TEST PROGRAM: SET AND UNSET PD1
-	/*
+	#if 0
 	set_bit(DDRD, DDD1); // Set pin 1 of port D to output
 	while (1) 
 	{
@@ -65,7 +65,16 @@ int main (void)
 		clear_bit(PORTD, PD1);
 		_delay_ms(100);
 	}
-	*/
+	#endif
+
+	#if 0
+	uart_initialize();
+	while (1)
+	{
+		uart_send_byte('a');
+		_delay_ms(100);
+	}
+	#endif
 
 	// UART DRIVER
 	#if 1
