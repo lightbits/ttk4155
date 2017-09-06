@@ -1,4 +1,5 @@
 #include "uart.h"
+#include <stdio.h>
 #include <util/delay.h> // _delay_ms
 
 // These functions are used to link the printf function

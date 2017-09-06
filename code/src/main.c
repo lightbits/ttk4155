@@ -1,11 +1,10 @@
-#define F_CPU 4915200
+#include "bitops.h"
+#include "uart.h"
+
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h> // rand
 #include <util/delay.h>
-
-#include "bitops.h"
-#include "uart.h"
 
 // This will repeatedly set pin 1 of port D high and low
 void test_clock()
@@ -37,32 +36,6 @@ void ext_mem_init()
 	// PORTC = 0x00;
 }
 
-// This will repeatedly try to access external memory.
-// You should verify that the latch is locking on to
-// the correct values, by measuring its pins and comparing
-// the value with the address used (see inside function).
-void ext_mem_test_latch()
-{
-	uart_init();
-	ext_mem_init();
-
-	printf("Starting external memory latch test...\n");
-
-	// This should access external memory
-	while (1)
-	{
-		// addr should be (0001 1100         1010 1010)
-		//                      ^^^^         ^^^^^^^^^
-		//                    (PC0-PC3)  (PA0-PA7 -> latch)
-		unsigned char *ptr = (unsigned char*)(0x1CAA);
-
-		// data byte should be (1010 1010)
-		*ptr = 0xaa;
-
-		_delay_ms(100);
-	}
-}
-
 // This will write and read values to the external SRAM.
 // You should verify that the SRAM is connected properly
 // by seeing how many errors there were. If there are 100%
@@ -70,7 +43,7 @@ void ext_mem_test_latch()
 // being crappy, there may be some errors anyway.
 void sram_test(void)
 {
-	uart_init();
+	uart_init(9600);
 	ext_mem_init();
 
 	volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
@@ -115,11 +88,37 @@ void sram_test(void)
 	printf("SRAM test completed with \n%4d errors in write phase and \n%4d errors in retrieval phase\n\n", write_errors, retrieval_errors);
 }
 
+// This will repeatedly try to access external memory.
+// You should verify that the latch is locking on to
+// the correct values, by measuring its pins and comparing
+// the value with the address used (see inside function).
+void ext_mem_test_latch()
+{
+	uart_init(9600);
+	ext_mem_init();
+
+	printf("Starting external memory latch test...\n");
+
+	// This should access external memory
+	while (1)
+	{
+		// addr should be (0001 1100         1010 1010)
+		//                      ^^^^         ^^^^^^^^^
+		//                    (PC0-PC3)  (PA0-PA7 -> latch)
+		unsigned char *ptr = (unsigned char*)(0x1CAA);
+
+		// data byte should be (1010 1010)
+		*ptr = 0xaa;
+
+		_delay_ms(100);
+	}
+}
+
 int main (void)
 {
-	uart_test();
+	// uart_test();
 
-	// ext_mem_test_latch();
+	ext_mem_test_latch();
 
 	// sram_test();
 }
