@@ -15,5 +15,7 @@ void uart_send_byte(uint8_t data);
 // This blocks program execution until data can be read
 uint8_t uart_read_byte();
 
+// This will repeatedly send a message over UART
+// wait for a response, and print the response back.
 void uart_test();
 #endif
