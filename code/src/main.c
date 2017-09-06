@@ -94,17 +94,24 @@ void ext_mem_test_latch(void)
 
 	printf("Starting external memory latch test...\n");
 
-	// This should access external memory
+	// This should access external memory and the MCU will
+	// thereby use its external memory addressing machinery.
+	// This loop repeatedly writes to destination 0x1CAA,
+	// (address 0001 1100 1010 1010), the value 0xAA (1010 1010).
+	
+	// Check that the latch is working correctly by seeing if
+	// its output (the 8 LSB of the address) are the same as the
+	// address that is written to below.
+	
+	// This pinout might also be useful for debugging if it doesn't work:
+	//            8 MSB          8 LSB
+	// Address: XXXX  XXXX     XXXX XXXX
+	//               PC0:PC3    PA0:PA7 (goes to latch)
+	//                         
 	while (1)
 	{
-		// addr should be (0001 1100         1010 1010)
-		//                      ^^^^         ^^^^^^^^^
-		//                    (PC0-PC3)  (PA0-PA7 -> latch)
 		unsigned char *ptr = (unsigned char*)(0x1CAA);
-
-		// data byte should be (1010 1010)
 		*ptr = 0xaa;
-
 		_delay_ms(100);
 	}
 }
