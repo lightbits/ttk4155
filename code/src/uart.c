@@ -1,6 +1,4 @@
 #include "uart.h"
-#include <stdio.h>
-#include <util/delay.h> // _delay_ms
 
 // These functions are used to link the printf function
 int printf_put(char c, FILE *file) { uart_send_byte(c); }
@@ -38,7 +36,7 @@ void uart_send_byte(uint8_t data)
 }
 
 // see atmega162 page 176
-uint8_t uart_read_byte()
+uint8_t uart_read_byte(void)
 {
     // wait until a byte has been received
     while (!test_bit(UCSR0A, RXC0)) { }
@@ -46,7 +44,7 @@ uint8_t uart_read_byte()
     return UDR0;
 }
 
-void uart_test()
+void uart_test(void)
 {
     uart_init(9600);
     while (1)

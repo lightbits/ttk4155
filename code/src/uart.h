@@ -1,7 +1,6 @@
 #ifndef UART_H
 #define UART_H
-#include <avr/io.h> // for uint8_t (stdint.h)
-#include "bitops.h"
+#include "common.h"
 
 // This sets up the UART controller with
 // * 8 data bits, 2 stop bits, no parity.
@@ -13,9 +12,9 @@ void uart_init(uint32_t baud_rate);
 void uart_send_byte(uint8_t data);
 
 // This blocks program execution until data can be read
-uint8_t uart_read_byte();
+uint8_t uart_read_byte(void);
 
 // This will repeatedly send a message over UART
 // wait for a response, and print the response back.
-void uart_test();
+void uart_test(void);
 #endif

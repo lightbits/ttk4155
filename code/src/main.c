@@ -1,13 +1,8 @@
-#include "bitops.h"
+#include "common.h"
 #include "uart.h"
 
-#include <avr/io.h>
-#include <stdio.h>
-#include <stdlib.h> // rand
-#include <util/delay.h>
-
 // This will repeatedly set pin 1 of port D high and low
-void test_clock()
+void test_clock(void)
 {
 	set_bit(DDRD, DDD1);
 	while (1)
@@ -19,7 +14,7 @@ void test_clock()
 	}
 }
 
-void ext_mem_init()
+void ext_mem_init(void)
 {
 	// Enable external memory
 	// See atmega162 / page 30
@@ -92,7 +87,7 @@ void sram_test(void)
 // You should verify that the latch is locking on to
 // the correct values, by measuring its pins and comparing
 // the value with the address used (see inside function).
-void ext_mem_test_latch()
+void ext_mem_test_latch(void)
 {
 	uart_init(9600);
 	ext_mem_init();
