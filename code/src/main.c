@@ -110,9 +110,50 @@ void ext_mem_test_latch(void)
 	//                         
 	while (1)
 	{
-		unsigned char *ptr = (unsigned char*)(0x1CAA);
-		*ptr = 0xaa;
+		uint8_t *ptr = (uint8_t*)(0x1CAA);
+		uint8_t value_to_write = 0xff;
+		
+		*ptr = value_to_write;
 		_delay_ms(100);
+		
+		uint8_t written_value = *ptr;
+		if (written_value == value_to_write) printf("OK\n");
+		else printf("NO (%x)\n", written_value);
+		_delay_ms(100);
+	}
+}
+
+void gal_test(void)
+{
+	uart_init(9600);
+	ext_mem_init();
+	
+	printf("Starting GAL test...\n");
+	
+	while (1)
+	{
+		uint8_t *p;
+		
+		// SRAM_CS should be 0
+		// ADC_CS should be 1
+		// OLED_CS should be 0
+		// p = (uint8_t*)0x1000; *p = 0xff; _delay_ms(100);
+		
+		//_delay_ms(1000);
+		
+		// SRAM_CS should be 0
+		// ADC_CS should be 0
+		// OLED_CS should be 1
+		//p = (uint8_t*)0x1400; *p = 0xff; _delay_ms(100);
+		
+		//_delay_ms(1000);
+		
+		// SRAM_CS should be 1
+		// ADC_CS should be 1
+		// OLED_CS should be 1
+		p = (uint8_t*)0x1800; *p = 0xff; _delay_ms(100);
+		
+		//_delay_ms(1000);
 	}
 }
 
@@ -120,7 +161,9 @@ int main (void)
 {
 	// uart_test();
 
-	ext_mem_test_latch();
+	// ext_mem_test_latch();
 
 	// sram_test();
+	
+	gal_test();
 }
