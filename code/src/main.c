@@ -162,7 +162,9 @@ void test_joystick()
     }
 }
 
-void adc_test()
+// This will repeatedly sample the four channels of
+// the ADC, and display their levels via printf.
+void test_adc()
 {
 	uart_init(9600);
 	ext_mem_init();
@@ -188,5 +190,5 @@ int main (void)
 
     // test_gal();
 	
-	adc_test();
+	test_adc();
 }

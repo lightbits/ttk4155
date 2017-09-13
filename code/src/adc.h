@@ -7,8 +7,4 @@
 #define ADC_H
 #include "common.h"
 uint8_t adc_read(int channel);
-
-// This will repeatedly sample the four channels of
-// the ADC, and display their levels via printf.
-void adc_test();
 #endif
