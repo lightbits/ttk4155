@@ -11,19 +11,3 @@ uint8_t adc_read(int channel)
     uint8_t value = *ADC;
     return value;
 }
-
-void adc_test()
-{
-    uart_init(9600);
-    ext_mem_init();
-    printf("Starting adc test...\n");
-    while (1)
-    {
-        uint8_t ch1 = adc_read(0);
-        uint8_t ch2 = adc_read(1);
-        uint8_t ch3 = adc_read(2);
-        uint8_t ch4 = adc_read(3);
-        printf("%d %d %d %d\n", ch1, ch2, ch3, ch4);
-        _delay_ms(500);
-    }
-}
