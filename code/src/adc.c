@@ -24,6 +24,6 @@ void adc_test()
         uint8_t ch3 = adc_read(2);
         uint8_t ch4 = adc_read(3);
         printf("%d %d %d %d\n", ch1, ch2, ch3, ch4);
-        _delay_ms(100);
+        _delay_ms(500);
     }
 }
