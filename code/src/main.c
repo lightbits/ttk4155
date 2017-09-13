@@ -1,5 +1,7 @@
 #include "common.h"
 #include "uart.h"
+#include "adc.h"
+#include "extmem.h"
 
 // This will repeatedly set pin 1 of port D high and low
 void test_clock(void)
@@ -14,36 +16,12 @@ void test_clock(void)
     }
 }
 
-void ext_mem_init(void)
-{
-    // Enable external memory
-    // See atmega162 / page 30
-    set_bit(MCUCR, SRE);
-
-    // Mask out 4 MSB of address to release port pins PC7-PC4
-    // See atmega162 / page 32 / table 4
-    set_bit(SFIOR, XMM2);
-    clear_bit(SFIOR, XMM1);
-    clear_bit(SFIOR, XMM0);
-
-    // Do we need to do this?
-    // DDRC = 0xFF;
-    // PORTC = 0x00;
-
-    // Set wait state to wait two cycles per read and write strobe
-    // (needed to adhere to ADC timing requirements)
-    // See atmega162 / page 30
-    // Note: Update this if you want to have different wait state sectors!
-    set_bit(MCUCR, SRW11);
-    clear_bit(EMCUCR, SRW10);
-}
-
 // This will write and read values to the external SRAM.
 // You should verify that the SRAM is connected properly
 // by seeing how many errors there were. If there are 100%
 // errors, it's probably not working; but due to breadboards
 // being crappy, there may be some errors anyway.
-void sram_test(void)
+void test_sram(void)
 {
     uart_init(9600);
     ext_mem_init();
@@ -94,7 +72,7 @@ void sram_test(void)
 // You should verify that the latch is locking on to
 // the correct values, by measuring its pins and comparing
 // the value with the address used (see inside function).
-void ext_mem_test_latch(void)
+void test_latch(void)
 {
     uart_init(9600);
     ext_mem_init();
@@ -130,7 +108,7 @@ void ext_mem_test_latch(void)
     }
 }
 
-void gal_test(void)
+void test_gal(void)
 {
     uart_init(9600);
     ext_mem_init();
@@ -164,34 +142,6 @@ void gal_test(void)
     }
 }
 
-// channel is one of 0 (ch1), 1 (ch2), 2 (ch3), 3 (ch4)
-uint8_t adc_read(int channel)
-{
-    volatile uint8_t *ADC = (uint8_t*)0x1400; // should maybe be global const
-    uint8_t mux_address = 4+channel;
-    *ADC = mux_address;
-    _delay_us(50); // Maximum conversion time is 40 microseconds (t_c)
-                   // let's wait a bit longer than that...
-    uint8_t value = *ADC;
-    return value;
-}
-
-void adc_test()
-{
-    uart_init(9600);
-    ext_mem_init();
-    printf("Starting adc test...\n");
-    while (1)
-    {
-        uint8_t ch1 = adc_read(0);
-        uint8_t ch2 = adc_read(1);
-        uint8_t ch3 = adc_read(2);
-        uint8_t ch4 = adc_read(3);
-        printf("%d %d %d %d\n", ch1, ch2, ch3, ch4);
-        _delay_ms(100);
-    }
-}
-
 void test_joystick()
 {
     uart_init(9600);
@@ -216,9 +166,9 @@ int main (void)
 {
     // uart_test();
 
-    // ext_mem_test_latch();
+    // test_latch();
 
-    // sram_test();
+    // test_sram();
 
-    gal_test();
+    test_gal();
 }
