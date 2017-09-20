@@ -38,10 +38,41 @@ void oled_init()
     oled_power_off();
     oled_invert_off();
     oled_horizontal_addressing_mode();
-    // oled_set_page(0);
-    // oled_set_column(0);
+    oled_set_page(0);
+    oled_set_column(0);
     oled_contrast(0x50);
     oled_power_on();
+}
+void oled_test()
+{
+	*oled_command = 0xae;
+	*oled_command = 0xa1;
+	*oled_command = 0xda;
+	*oled_command = 0x12;
+	*oled_command = 0xc8;
+	*oled_command = 0xa8;
+	*oled_command = 0x3f;
+	*oled_command = 0xd5;
+	*oled_command = 0x80;
+	*oled_command = 0x81;
+	*oled_command = 0x50;
+	*oled_command = 0xd9;
+	*oled_command = 0x21;
+	*oled_command = 0x20;
+	*oled_command = 0x02;
+	*oled_command = 0xdb;
+	*oled_command = 0x30;
+	*oled_command = 0xad;
+	*oled_command = 0x00;
+	*oled_command = 0xa4;
+	*oled_command = 0xa6;
+	*oled_command = 0xaf;
+	
+	while (1)
+	{
+		*oled_data = 0xff;
+		_delay_ms(100);
+	}
 }
 void oled_set_pixels(uint8_t pixels)
 {

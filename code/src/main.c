@@ -123,21 +123,21 @@ void test_gal(void)
         // SRAM_CS should be 0
         // ADC_CS should be 1
         // OLED_CS should be 0
-        // p = (uint8_t*)0x1000; *p = 0xff; _delay_ms(100);
+        //p = (uint8_t*)0x1000; *p = 0xff; _delay_ms(100);
 
         //_delay_ms(1000);
 
         // SRAM_CS should be 0
         // ADC_CS should be 0
         // OLED_CS should be 1
-        //p = (uint8_t*)0x1400; *p = 0xff; _delay_ms(100);
+        p = (uint8_t*)0x1400; *p = 0xff; _delay_ms(100);
 
         //_delay_ms(1000);
 
         // SRAM_CS should be 1
         // ADC_CS should be 1
         // OLED_CS should be 1
-        p = (uint8_t*)0x1800; *p = 0xff; _delay_ms(100);
+        // p = (uint8_t*)0x1800; *p = 0xff; _delay_ms(100);
 
         //_delay_ms(1000);
     }
@@ -183,7 +183,10 @@ void test_adc()
 
 void oled_test_checkerboard()
 {
+	uart_init(9600);
+	ext_mem_init();
     oled_init();
+	printf("Testing oled...\n");
     int i = 0; // flips between 0 and 1 to animate the checkerboard
     while (1)
     {
@@ -271,5 +274,15 @@ int main (void)
 
     // test_gal();
 
-	test_adc();
+	// test_adc();
+	
+	{
+		uart_init(9600);
+		ext_mem_init();
+		printf("testing oled...\n");
+		_delay_ms(100);	
+		oled_test();	
+	}
+	
+	// oled_test_checkerboard();
 }
