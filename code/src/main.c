@@ -147,9 +147,9 @@ void test_joystick()
 {
     uart_init(9600);
     ext_mem_init();
-    uint8_t min_x = 256;
+    uint8_t min_x = 255;
     uint8_t max_x = 0;
-    uint8_t min_y = 256;
+    uint8_t min_y = 255;
     uint8_t max_y = 0;
     uint8_t button_threshold = 128;
     while (1)
