@@ -1,6 +1,6 @@
 #include "oled.h"
-volatile uint8_t *oled_command = OLED_COMMAND_MEMORY_START;
-volatile uint8_t *oled_data = OLED_DATA_MEMORY_START;
+volatile uint8_t *oled_command = (uint8_t*)OLED_COMMAND_MEMORY_START;
+volatile uint8_t *oled_data = (uint8_t*)OLED_DATA_MEMORY_START;
 
 void oled_power_on()   { *oled_command = 0xaf; }
 void oled_power_off()  { *oled_command = 0xae; }
