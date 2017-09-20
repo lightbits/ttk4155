@@ -11,4 +11,5 @@ void oled_invert_off();
 void oled_set_column(uint8_t column); // range: 0 to 127
 void oled_set_page(uint8_t page); // range: 0 to 7
 void oled_contrast(uint8_t contrast); // range: 0 to 255
+void oled_set_pixels(uint8_t pixels);
 #endif

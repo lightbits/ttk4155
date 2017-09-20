@@ -43,3 +43,7 @@ void oled_init()
     oled_contrast(0x50);
     oled_power_on();
 }
+void oled_set_pixels(uint8_t pixels)
+{
+    *oled_data = pixels;
+}

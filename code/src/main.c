@@ -207,7 +207,7 @@ void oled_test_checkerboard()
             // then it resets to the next row, and continues like this
             // until it reaches the bottom right, and then resets to
             // the top left.
-            *oled_data = data;
+            oled_set_pixels(data);
         }
         _delay_ms(500);
     }
@@ -251,10 +251,10 @@ void oled_test_symbols()
 
                 // draw the symbol
                 for (uint8_t i = 0; i < 4; i++)
-                    *oled_data = sym[i];
+                    oled_set_pixels(sym[i]);
 
                 // blank space between symbols
-                *oled_data = 0x00;
+                oled_set_pixels(0x00);
             }
         }
         _delay_ms(500);
