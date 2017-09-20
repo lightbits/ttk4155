@@ -233,7 +233,7 @@ void oled_test_symbols()
     static uint8_t sym_e[] = { 0x1f, 0x15, 0x15, 0x11 };
     static uint8_t sym_f[] = { 0x1f, 0x05, 0x05, 0x01 };
 
-    uint8_t **symbols[] = { sym_a, sym_b, sym_c, sym_d, sym_e, sym_f };
+    uint8_t *symbols[] = { sym_a, sym_b, sym_c, sym_d, sym_e, sym_f };
 
     oled_init();
     while (1)
