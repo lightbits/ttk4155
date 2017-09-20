@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "adc.h"
 #include "extmem.h"
+#include "oled.h"
 
 // This will repeatedly set pin 1 of port D high and low
 void test_clock(void)
@@ -180,6 +181,86 @@ void test_adc()
 	}
 }
 
+void oled_test_checkerboard()
+{
+    oled_init();
+    int i = 0; // flips between 0 and 1 to animate the checkerboard
+    while (1)
+    {
+        i = (i+1) % 2;
+        for (int p = 0; p < 8; p++) // for each page (group of 8 pixels)
+        for (int x = 0; x < 128; x++) // for each column
+        {
+            uint8_t data = 0; // the 8 pixel values in the page
+            for (int y = p*8; y < (p+1)*8; y++)
+            {
+                if ((x+y) % 2 == i)
+                    data |= 1 << y;
+            }
+
+            // We write pixels to the OLED one "page" at a time. A page
+            // consists of eight pixels (one bit each). oled_init will
+            // enable the "horizontal addressing mode", which means that
+            // by writing one page at a time, the OLED driver chip will
+            // automatically advance the current pixel pointer by eight
+            // pixels. It goes horizontally (column-wise) until the end
+            // then it resets to the next row, and continues like this
+            // until it reaches the bottom right, and then resets to
+            // the top left.
+            *oled_data = data;
+        }
+        _delay_ms(500);
+    }
+}
+
+void oled_test_symbols()
+{
+    // The following static tables define these characters.
+    // They are stored page by page (going to the right).
+    // One page encodes a vertical strip of pixels. For
+    // example, the left-most bar of the A is 0x1f =
+    // 00011111 in binary. I'm assuming least significant
+    // bit corresponds to top-most.
+    // #### #### #### ###  #### ####
+    // #  # #  # #    #  # #    #
+    // #### ###  #    #  # ###  ###
+    // #  # #  # #    #  # #    #
+    // #  # #### #### ###  #### #
+    static uint8_t sym_a[] = { 0x1f, 0x05, 0x05, 0x1f };
+    static uint8_t sym_b[] = { 0x1f, 0x15, 0x15, 0x1b };
+    static uint8_t sym_c[] = { 0x1f, 0x11, 0x11, 0x11 };
+    static uint8_t sym_d[] = { 0x1f, 0x11, 0x11, 0x0e };
+    static uint8_t sym_e[] = { 0x1f, 0x15, 0x15, 0x11 };
+    static uint8_t sym_f[] = { 0x1f, 0x05, 0x05, 0x01 };
+
+    uint8_t **symbols[] = { sym_a, sym_b, sym_c, sym_d, sym_e, sym_f };
+
+    oled_init();
+    while (1)
+    {
+        uint8_t symbol_index = 0;
+        for (uint8_t y = 0; y < 8; y++)
+        {
+            oled_set_page(y);
+
+            // Each symbol is 4 pixels wide + 1 pixel spacing.
+            // That gives us 128/5 = 25 symbols per row.
+            for (uint8_t x = 0; x < 128/5; x++)
+            {
+                uint8_t *sym = symbols[symbol_index];
+
+                // draw the symbol
+                for (uint8_t i = 0; i < 4; i++)
+                    *oled_data = sym[i];
+
+                // blank space between symbols
+                *oled_data = 0x00;
+            }
+        }
+        _delay_ms(500);
+    }
+}
+
 int main (void)
 {
     // uart_test();
@@ -189,6 +270,6 @@ int main (void)
     // test_sram();
 
     // test_gal();
-	
+
 	test_adc();
 }
