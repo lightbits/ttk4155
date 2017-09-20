@@ -223,6 +223,9 @@
     <Compile Include="src\extmem.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\font.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\oled.c">
       <SubType>compile</SubType>
     </Compile>

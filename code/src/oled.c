@@ -23,6 +23,13 @@ void oled_horizontal_addressing_mode()
     *oled_command = 0x20;
     *oled_command = 0x00;
 }
+
+void oled_page_addressing_mode()
+{
+	*oled_command = 0x20;
+	*oled_command = 2;
+}
+
 void oled_contrast(uint8_t contrast)
 {
     *oled_command = 0x81;
@@ -37,7 +44,8 @@ void oled_init()
 {
     oled_power_off();
     oled_invert_off();
-    oled_horizontal_addressing_mode();
+    // oled_horizontal_addressing_mode();
+	oled_page_addressing_mode();
     oled_set_page(0);
     oled_set_column(0);
     oled_contrast(0x50);
@@ -77,4 +85,5 @@ void oled_test()
 void oled_set_pixels(uint8_t pixels)
 {
     *oled_data = pixels;
+	//_delay_ms(10);
 }
