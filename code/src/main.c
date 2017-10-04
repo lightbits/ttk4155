@@ -4,6 +4,9 @@
 #include "extmem.h"
 #include "oled.h"
 #include "font.h"
+#include "spi.h"
+#include "mcp2515.h"
+#include "can.h"
 
 // This will repeatedly set pin 1 of port D high and low
 void test_clock(void)
@@ -449,6 +452,26 @@ void test_menu()
 	}
 }
 
+void test_mcp()
+{
+	uart_init(9600);
+	printf("testing mcp\n");
+	_delay_ms(100);
+	mcp_init();
+	_delay_ms(100);
+	//mcp_bit_modify(MCP_CANCTRL, 0xE0, 0x80);
+	_delay_ms(100);
+	mcp_bit_modify(MCP_CANCTRL, 0xE0, 0x40);
+	
+	while (1)
+	{
+		mcp_write(MCP_CANCTRL, 0b01001011);
+		uint8_t data = mcp_read(MCP_CANCTRL);
+		printf("Value: %d\n", data);
+		_delay_ms(100);	
+	}
+}
+
 int main (void)
 {
     // uart_test();
@@ -465,5 +488,7 @@ int main (void)
 	// test_smiley();
 	// test_symbols();
 	
-	test_menu();
+	//test_menu()
+	
+	test_mcp();
 }
