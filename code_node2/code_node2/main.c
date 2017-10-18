@@ -91,10 +91,30 @@ void test_can_between_nodes()
 	}
 }
 
+void test_can_and_joystick()
+{
+	uart_init(9600);
+	mcp_init();
+	mcp_mode_normal();
+	printf("(node 2) Testing can and joystick...\n");
+	while (1)
+	{
+		uint16_t id;
+		uint8_t data[8];
+		uint8_t length;
+		while (!mcp_read_message(&id, data, &length)) { }
+		uint8_t joy_x = data[0];
+		uint8_t joy_y = data[1];
+
+		printf("(node 2) %d %d\n", joy_x, joy_y);
+	}
+}
+
 int main(void)
 {
 	// uart_test();
 	// test_mcp();
 	// test_can_loopback();
-	test_can_between_nodes();
+	// test_can_between_nodes();
+	test_can_and_joystick();
 }
