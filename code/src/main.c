@@ -147,26 +147,6 @@ void test_gal(void)
     }
 }
 
-void test_joystick()
-{
-    uart_init(9600);
-    ext_mem_init();
-    uint8_t min_x = 255;
-    uint8_t max_x = 0;
-    uint8_t min_y = 255;
-    uint8_t max_y = 0;
-    uint8_t button_threshold = 128;
-    while (1)
-    {
-        uint8_t x_volt = adc_read(ADC_CHANNEL_JOY_X);
-        uint8_t y_volt = adc_read(ADC_CHANNEL_JOY_Y);
-        uint8_t b_volt = adc_read(ADC_CHANNEL_JOY_B);
-        uint8_t is_down = (b_volt < button_threshold);
-
-        _delay_ms(100);
-    }
-}
-
 // This will repeatedly sample the four channels of
 // the ADC, and display their levels via printf.
 void test_adc()
@@ -342,7 +322,7 @@ void oled_write_char(char c)
 
 void oled_print(const char *str)
 {
-    char *c = str;
+    const char *c = str;
     while (*c)
     {
         oled_write_char(*c);
@@ -443,7 +423,7 @@ void test_menu()
         {
             oled_set_page(num_entries);
             oled_set_column(0);
-            char buffer[256];
+            char buffer[32];
             sprintf(buffer, "entry: %d", selected_entry);
             oled_print(buffer);
         }
@@ -484,7 +464,7 @@ void test_can_loopback()
         mcp_send_message(sent_id, sent_data, sent_length);
         printf("sent message\n");
 
-        _delay_ms(100);
+        _delay_ms(2000);
 
         uint16_t read_id;
         uint8_t read_data[8];
@@ -492,13 +472,15 @@ void test_can_loopback()
         if (mcp_read_message(&read_id, read_data, &read_length))
         {
             printf("got message\n");
-            printf("id: %d\n", read_id);
-            printf("data: ");
+            printf("  id: %d\n", read_id);
+            printf("  data: ");
             for (int i = 0; i < read_length; i++)
                 printf("%x ", read_data[i]);
             printf("\n");
-            printf("length: %d\n", read_length);
+            printf("  length: %d\n", read_length);
         }
+
+		_delay_ms(2000);
     }
 }
 
@@ -518,7 +500,9 @@ int main (void)
     // test_smiley();
     // test_symbols();
 
-    //test_menu()
+    // test_menu();
 
-    test_mcp();
+    // test_mcp();
+
+	test_can_loopback();
 }

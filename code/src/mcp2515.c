@@ -115,7 +115,7 @@ int mcp_request_to_send(uint8_t bitflag) {
     SPI_slave_select();
 
     // Request-to-send instruction
-    SPI_write(MCP_RTS | (instr & 7));
+    SPI_write(MCP_RTS | (bitflag & 7));
 
     // Deactivate slave select
     SPI_slave_deselect();
@@ -176,7 +176,7 @@ mcp_status mcp_get_status()
 
 mcp_tx_status mcp_get_tx_status(uint8_t which)
 {
-    uint8_t data;
+    uint8_t data = 0;
     if (which == 0) data = mcp_read(MCP_TXB0CTRL);
     if (which == 1) data = mcp_read(MCP_TXB1CTRL);
     if (which == 2) data = mcp_read(MCP_TXB2CTRL);

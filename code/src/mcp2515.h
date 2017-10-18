@@ -35,27 +35,27 @@ int mcp_reset(void);
 int mcp_request_to_send(uint8_t bitflag);
 
 // Return short status of transmission buffers and receive buffers
-struct mcp_status
+typedef struct
 {
-    bool message_in_rx0;
-    bool message_in_rx1;
-    bool tx0_pending;
-    bool tx1_pending;
-    bool tx2_pending;
-    bool tx0_sent;
-    bool tx1_sent;
-    bool tx2_sent;
-};
+    int message_in_rx0;
+    int message_in_rx1;
+    int tx0_pending;
+    int tx1_pending;
+    int tx2_pending;
+    int tx0_sent;
+    int tx1_sent;
+    int tx2_sent;
+} mcp_status;
 mcp_status mcp_get_status();
 
 // Return detailed status of a specific transmission buffer (0, 1 or 2)
-struct mcp_tx_status
+typedef struct 
 {
-    bool aborted; // message aborted
-    bool lost;    // message lost arbitration
-    bool error;   // a bus error occurred
-    bool pending; // still waiting to transmit
-};
+    int aborted; // message aborted
+    int lost;    // message lost arbitration
+    int error;   // a bus error occurred
+    int pending; // still waiting to transmit
+} mcp_tx_status;
 mcp_tx_status mcp_get_tx_status(uint8_t which);
 
 #endif
