@@ -171,28 +171,28 @@ void test_joystick()
 // the ADC, and display their levels via printf.
 void test_adc()
 {
-	uart_init(9600);
-	ext_mem_init();
-	printf("Starting adc test...\n");
-	while (1)
-	{
-		uint8_t ch1 = adc_read(0);
-		uint8_t ch2 = adc_read(1);
-		uint8_t ch3 = adc_read(2);
-		uint8_t ch4 = adc_read(3);
-		printf("%d %d %d %d\n", ch1, ch2, ch3, ch4);
-		_delay_ms(500);
-	}
+    uart_init(9600);
+    ext_mem_init();
+    printf("Starting adc test...\n");
+    while (1)
+    {
+        uint8_t ch1 = adc_read(0);
+        uint8_t ch2 = adc_read(1);
+        uint8_t ch3 = adc_read(2);
+        uint8_t ch4 = adc_read(3);
+        printf("%d %d %d %d\n", ch1, ch2, ch3, ch4);
+        _delay_ms(500);
+    }
 }
 
 void oled_test_checkerboard()
 {
-	uart_init(9600);
-	ext_mem_init();
+    uart_init(9600);
+    ext_mem_init();
     oled_init();
-	printf("Testing oled...\n");
+    printf("Testing oled...\n");
     int i = 0; // flips between 0 and 1 to animate the checkerboard
-	int size = 4;
+    int size = 4;
     while (1)
     {
         i = (i+1) % 2;
@@ -202,7 +202,7 @@ void oled_test_checkerboard()
             uint8_t data = 0; // the 8 pixel values in the page
             for (int y = 0; y < 8; y++)
             {
-				int odd = x/size + (p*8 + y)/size;
+                int odd = x/size + (p*8 + y)/size;
                 if (odd % 2 == i)
                     data |= 1 << y;
             }
@@ -224,65 +224,65 @@ void oled_test_checkerboard()
 
 void test_smiley()
 {
-	ext_mem_init();
-	oled_init();
-	
+    ext_mem_init();
+    oled_init();
+
     while (1)
     {
-		oled_set_page(0);
-		oled_set_column(0);
-		
-		for (int y = 0; y < 8; y++)
-	    {
-			oled_set_page(y);
-			oled_set_column(0);
-			for (int x = 0; x < 128; x++){ // for each column
-				// oled_set_pixels(0xff);
-				if (y==3 && x > 56 && x < (56+8)){
-					oled_set_pixels(0xff);	
-				}
-				else if (y == 4)
-				    oled_set_pixels(0xff);
-				//else if (y==1 && x>80 && x<88){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==3 && x>40 && x<48){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==4 && x>40 && x<48){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==5 && x>48 && x<56){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==5 && x>56 && x<64){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==6 && x>64 && x<72){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==6 && x>72 && x<80){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==6 && x>80 && x<88){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==5 && x>88 && x<96){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==4 && x>96 && x<104){
-					//oled_set_pixels(0xff);
-				//}
-				//else if (y==3 && x>96 && x<104){
-					//oled_set_pixels(0xff);
-				//}
-				else {
-					oled_set_pixels(0);
-				}
-				 	
-		    }
-	    }
-	   
+        oled_set_page(0);
+        oled_set_column(0);
+
+        for (int y = 0; y < 8; y++)
+        {
+            oled_set_page(y);
+            oled_set_column(0);
+            for (int x = 0; x < 128; x++){ // for each column
+                // oled_set_pixels(0xff);
+                if (y==3 && x > 56 && x < (56+8)){
+                    oled_set_pixels(0xff);
+                }
+                else if (y == 4)
+                    oled_set_pixels(0xff);
+                //else if (y==1 && x>80 && x<88){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==3 && x>40 && x<48){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==4 && x>40 && x<48){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==5 && x>48 && x<56){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==5 && x>56 && x<64){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==6 && x>64 && x<72){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==6 && x>72 && x<80){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==6 && x>80 && x<88){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==5 && x>88 && x<96){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==4 && x>96 && x<104){
+                    //oled_set_pixels(0xff);
+                //}
+                //else if (y==3 && x>96 && x<104){
+                    //oled_set_pixels(0xff);
+                //}
+                else {
+                    oled_set_pixels(0);
+                }
+
+            }
+        }
+
     }
 }
 
@@ -335,141 +335,139 @@ void oled_test_symbols()
 }
 
 void oled_write_char(char c)
-{	
-	for (int i = 0; i < 5; i++)
-		oled_set_pixels(pgm_read_byte(&font5[c - ' '][i]));
+{
+    for (int i = 0; i < 5; i++)
+        oled_set_pixels(pgm_read_byte(&font5[c - ' '][i]));
 }
 
 void oled_print(const char *str)
 {
-	char *c = str;
-	while (*c)
-	{
-		oled_write_char(*c);
-		oled_set_pixels(0);
-		c++;
-	}
+    char *c = str;
+    while (*c)
+    {
+        oled_write_char(*c);
+        oled_set_pixels(0);
+        c++;
+    }
 }
 
 void test_symbols()
 {
-	ext_mem_init();
-	oled_init();
-	
-	oled_set_page(0);
-	oled_set_column(0);
-	
-	for (int y = 0; y < 8; y++)
-	{
-		oled_set_page(y);
-		oled_set_column(0x00);
-		for (int x = 0; x < 128; x++)
-		oled_set_pixels(0x00);
-	}
-	
-	while (1)
-	{		
-		oled_set_page(0);
-		oled_set_column(0);
-		
-		oled_print("Hello world!");
-	}
+    ext_mem_init();
+    oled_init();
+
+    oled_set_page(0);
+    oled_set_column(0);
+
+    for (int y = 0; y < 8; y++)
+    {
+        oled_set_page(y);
+        oled_set_column(0x00);
+        for (int x = 0; x < 128; x++)
+        oled_set_pixels(0x00);
+    }
+
+    while (1)
+    {
+        oled_set_page(0);
+        oled_set_column(0);
+
+        oled_print("Hello world!");
+    }
 }
 
 void test_menu()
 {
-	ext_mem_init();
-	oled_init();
-	
-	// clear screen
-	oled_set_page(0);
-	oled_set_column(0);
-	for (int y = 0; y < 8; y++)
-	{
-		oled_set_page(y);
-		oled_set_column(0x00);
-		for (int x = 0; x < 128; x++)
-		oled_set_pixels(0x00);
-	}
-	
-	const char *entries[] = {
-		"hello sailor!",
-		"hello painter!",
-		"exit",
-		"self destruct"
-	};
-	int num_entries = 4;
-	int selected_entry = 0;
-	
-	while (1)
-	{
-		// clear screen
-		oled_set_page(0);
-		oled_set_column(0);
-		for (int y = 0; y < 8; y++)
-		{
-			oled_set_page(y);
-			oled_set_column(0x00);
-			for (int x = 0; x < 128; x++)
-			oled_set_pixels(0x00);
-		}
-		
-		oled_set_page(0);
-		oled_set_column(0);
-		
-		uint8_t joy_x = adc_read(0);
-		uint8_t joy_y = adc_read(1);
-		
-		int joy_up = (joy_y < 100);
-		int joy_down = (joy_y > 200);
-		int joy_right = (joy_x < 100);
-		int joy_left = (joy_x > 200);
-		
-		if (joy_down && selected_entry < num_entries-1)
-			selected_entry++;
-		if (joy_up && selected_entry > 0)
-			selected_entry--;
-		
-		for (int i = 0; i < num_entries; i++)
-		{
-			oled_set_page(i);
-			oled_set_column(0);
-			if (selected_entry == i)
-				oled_print(">> ");
-			oled_print(entries[i]);
-		}
-		
-		if (joy_right)
-		{
-			oled_set_page(num_entries);
-			oled_set_column(0);
-			char buffer[256];
-			sprintf(buffer, "entry: %d", selected_entry);
-			oled_print(buffer);
-		}
-		
-		_delay_ms(500);
-	}
+    ext_mem_init();
+    oled_init();
+
+    // clear screen
+    oled_set_page(0);
+    oled_set_column(0);
+    for (int y = 0; y < 8; y++)
+    {
+        oled_set_page(y);
+        oled_set_column(0x00);
+        for (int x = 0; x < 128; x++)
+        oled_set_pixels(0x00);
+    }
+
+    const char *entries[] = {
+        "hello sailor!",
+        "hello painter!",
+        "exit",
+        "self destruct"
+    };
+    int num_entries = 4;
+    int selected_entry = 0;
+
+    while (1)
+    {
+        // clear screen
+        oled_set_page(0);
+        oled_set_column(0);
+        for (int y = 0; y < 8; y++)
+        {
+            oled_set_page(y);
+            oled_set_column(0x00);
+            for (int x = 0; x < 128; x++)
+            oled_set_pixels(0x00);
+        }
+
+        oled_set_page(0);
+        oled_set_column(0);
+
+        uint8_t joy_x = adc_read(0);
+        uint8_t joy_y = adc_read(1);
+
+        int joy_up = (joy_y < 100);
+        int joy_down = (joy_y > 200);
+        int joy_right = (joy_x < 100);
+        int joy_left = (joy_x > 200);
+
+        if (joy_down && selected_entry < num_entries-1)
+            selected_entry++;
+        if (joy_up && selected_entry > 0)
+            selected_entry--;
+
+        for (int i = 0; i < num_entries; i++)
+        {
+            oled_set_page(i);
+            oled_set_column(0);
+            if (selected_entry == i)
+                oled_print(">> ");
+            oled_print(entries[i]);
+        }
+
+        if (joy_right)
+        {
+            oled_set_page(num_entries);
+            oled_set_column(0);
+            char buffer[256];
+            sprintf(buffer, "entry: %d", selected_entry);
+            oled_print(buffer);
+        }
+
+        _delay_ms(500);
+    }
 }
 
 void test_mcp()
 {
-	uart_init(9600);
-	printf("testing mcp\n");
-	_delay_ms(100);
-	mcp_init();
-	_delay_ms(100);
-	//mcp_bit_modify(MCP_CANCTRL, 0xE0, 0x80);
-	_delay_ms(100);
-	mcp_bit_modify(MCP_CANCTRL, 0xE0, 0x40);
-	
-	while (1)
-	{
-		mcp_write(MCP_CANCTRL, 0b01001011);
-		uint8_t data = mcp_read(MCP_CANCTRL);
-		printf("Value: %d\n", data);
-		_delay_ms(100);	
-	}
+    uart_init(9600);
+    mcp_init();
+    printf("Testing mcp...\n");
+    while (1)
+    {
+        // The CANCTRL register can be read and written to freely,
+        // so we check if it works by writing some binary value and
+        // seeing if the value we then read matches.
+        uint8_t byte_written = 0b01001011;
+        mcp_write(MCP_CANCTRL, byte_written);
+        uint8_t byte_read = mcp_read(MCP_CANCTRL);
+        printf("Wrote: %d\tGot: %d\n", byte_written, byte_read);
+        _delay_ms(100);
+    }
 }
 
 int main (void)
@@ -482,13 +480,13 @@ int main (void)
 
     // test_gal();
 
-	// test_adc();
-	
-	// oled_test_checkerboard();
-	// test_smiley();
-	// test_symbols();
-	
-	//test_menu()
-	
-	test_mcp();
+    // test_adc();
+
+    // oled_test_checkerboard();
+    // test_smiley();
+    // test_symbols();
+
+    //test_menu()
+
+    test_mcp();
 }
