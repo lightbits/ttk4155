@@ -80,7 +80,7 @@ int mcp_write_many(uint8_t address, uint8_t *data, uint8_t count) {
 	return 0;
 }
 
-int mcp_request_to_send(uint8_t instr) {
+int mcp_request_to_send(uint8_t bitflag) {
 	// Activate slave select
 	SPI_slave_select();
 
@@ -90,6 +90,7 @@ int mcp_request_to_send(uint8_t instr) {
 	// Deactivate slave select
 	SPI_slave_deselect();
 
+	return 0;
 }
 
 int mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
