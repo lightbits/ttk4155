@@ -41,10 +41,7 @@ void mcp_init(void) {
     // with other CAN nodes, but probably not important when in
     // loopback mode.
 
-    //
-    // Enter loopback mode (todo: enter normal mode instead)
-    //
-    mcp_mode_loopback();
+    mcp_mode_normal();
 }
 
 uint8_t mcp_read(uint8_t address) {
