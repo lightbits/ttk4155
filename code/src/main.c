@@ -484,6 +484,23 @@ void test_can_loopback()
     }
 }
 
+void test_can_normal()
+{
+	uart_init(9600);
+	mcp_init();
+	mcp_mode_normal();
+	printf("Testing can normal...\n");
+	while (1)
+	{
+		uint16_t sent_id = 42;
+		uint8_t sent_data[] = { 1, 2, 3, 4, 5 };
+		uint8_t sent_length = 5;
+		mcp_send_message(sent_id, sent_data, sent_length);
+
+		_delay_ms(10);
+	}
+}
+
 int main (void)
 {
     // uart_test();
@@ -504,5 +521,7 @@ int main (void)
 
     // test_mcp();
 
-	test_can_loopback();
+	// test_can_loopback();
+
+	test_can_normal();
 }
