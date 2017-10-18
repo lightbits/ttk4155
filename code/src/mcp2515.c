@@ -124,20 +124,38 @@ int mcp_reset(void) {
 	return 0;
 }
 
+mcp_status mcp_get_status()
+{
+    SPI_slave_select();
+    SPI_write(MCP_READ_STATUS);
+    uint8_t data = SPI_read();
+    SPI_slave_deselect();
 
+    // See page 69, figure 12-8 for a description of the return data
+    mcp_status status;
+    status.message_in_rx0 = data & 0b00000001;
+    status.message_in_rx1 = data & 0b00000010;
+    status.tx0_pending    = data & 0b00000100;
+    status.tx1_pending    = data & 0b00001000;
+    status.tx2_pending    = data & 0b00010000;
+    status.tx0_sent       = data & 0b00100000;
+    status.tx1_sent       = data & 0b01000000;
+    status.tx2_sent       = data & 0b10000000;
+    return status;
+}
 
-uint8_t mcp_read_status(void) {
-	uint8_t status;
+mcp_tx_status mcp_get_tx_status(uint8_t which)
+{
+    uint8_t data;
+    if (which == 0) data = mcp_read(MCP_TXB0CTRL);
+    if (which == 1) data = mcp_read(MCP_TXB1CTRL);
+    if (which == 2) data = mcp_read(MCP_TXB2CTRL);
 
-	// Activate slave select
-	SPI_slave_select();
-
-	// Read status instruction
-	SPI_write(MCP_READ_STATUS);
-	status = SPI_read();
-
-	// Deactivate slave select
-	SPI_slave_deselect();
-
-	return status;
+    // See page 18, register 3-1 for description of the data
+    mcp_tx_status status;
+    status.aborted = data & 0b01000000; // message aborted
+    status.lost    = data & 0b00100000; // message lost arbitration
+    status.error   = data & 0b00010000; // a bus error occurred
+    status.pending = data & 0b00001000; // still waiting to transmit
+    return status;
 }
