@@ -3,6 +3,19 @@
 #include "common.h"
 #include "mcp2515_registers.h"
 
+//
+// CAN messaging interface
+//
+// Note: sending messages will use the 0'th transmission buffer
+// Reading a message will return a message from any of the receive
+// buffers. The return value is 1 if there was a message available
+// and 0 otherwise.
+void mcp_send_message(uint16_t id, uint8_t *data, uint8_t length);
+int  mcp_read_message(uint16_t *id, uint8_t *data, uint8_t *length);
+
+//
+// MCP controller interface
+//
 void mcp_init(void);
 void mcp_mode_config(void);
 void mcp_mode_loopback(void);

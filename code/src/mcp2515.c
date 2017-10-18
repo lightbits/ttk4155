@@ -204,3 +204,57 @@ void mcp_mode_loopback() {
 void mcp_mode_normal() {
     mcp_bit_modify(MCP_CANCTRL, MCP_REQOP, MCP_REQOP_NORMAL);
 }
+
+void mcp_send_message(uint16_t id, uint8_t *data, uint8_t length) {
+    // Write the ID
+    uint8_t id_high = (uint8_t)(id >> 3);
+    uint8_t id_low = (uint8_t)((id & 0b111) << 5);
+    mcp_write(MCP_TXB0SIDH, id_high);
+    mcp_write(MCP_TXB0SIDL, id_low);
+
+    // Write length of message (0 to 8 bytes)
+    // Note: this also sets RTR to 0 (indicating a data frame)
+    // Note: it is possible to set the value greater than 8, but only
+    // 8 bytes are allowed anyway.
+    mcp_write(MCP_TXB0DLC, length & 0b1111);
+
+    // Write the data bytes
+    mcp_write_many(MCP_TXB0D0, data, length);
+
+    // Flag the message buffer as being ready for transmission
+    mcp_request_to_send(MCP_RTS0);
+}
+
+int mcp_read_message(uint16_t *id, uint8_t *data, uint8_t *length) {
+    uint8_t msg[13];
+
+    mcp_status s = mcp_get_status();
+    if (s.message_in_rx0)
+    {
+        mcp_read_many(MCP_RXB0SIDH, msg, 13);
+        mcp_bit_modify(MCP_CANINTF, MCP_RX0IF, 0);
+    }
+    else if (s.message_in_rx1)
+    {
+        mcp_read_many(MCP_RXB1SIDH, msg, 13);
+        mcp_bit_modify(MCP_CANINTF, MCP_RX1IF, 0);
+    }
+    else
+    {
+        return 0;
+    }
+
+    uint16_t id_high = msg[0];
+    uint16_t id_low = (msg[1] >> 5);
+    *id = (id_high << 3) | (id_low);
+
+    // extended ID (unused)
+    // uint8_t eid_high = msg[2];
+    // uint8_t eid_low = msg[3];
+
+    *length = msg[4] & 0b1111;
+    for (uint8_t i = 0; i < *length; i++)
+        data[i] = msg[5+i];
+
+    return 1;
+}
