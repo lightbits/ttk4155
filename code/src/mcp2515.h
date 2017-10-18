@@ -1,6 +1,7 @@
 #ifndef MCP2515_H
 #define MCP2515_H
 #include "common.h"
+#include "mcp2515_registers.h"
 
 
 int mcp_init(void);
