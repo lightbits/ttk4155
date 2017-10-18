@@ -3,8 +3,10 @@
 #include "common.h"
 #include "mcp2515_registers.h"
 
-
-int mcp_init(void);
+void mcp_init(void);
+void mcp_mode_config(void);
+void mcp_mode_loopback(void);
+void mcp_mode_normal(void);
 uint8_t mcp_read(uint8_t address);
 int mcp_write(uint8_t address, uint8_t data);
 int mcp_write_many(uint8_t address, uint8_t *data, uint8_t count);
