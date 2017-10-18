@@ -484,20 +484,38 @@ void test_can_loopback()
     }
 }
 
-void test_can_normal()
+void test_can_between_nodes()
 {
 	uart_init(9600);
 	mcp_init();
 	mcp_mode_normal();
-	printf("Testing can normal...\n");
+	printf("Testing can between nodes...\n");
 	while (1)
 	{
+		printf("(node 1) Sending message...\n");
 		uint16_t sent_id = 42;
-		uint8_t sent_data[] = { 1, 2, 3, 4, 5 };
+		uint8_t sent_data[] = { 5, 4, 3, 2, 1 };
 		uint8_t sent_length = 5;
 		mcp_send_message(sent_id, sent_data, sent_length);
 
-		_delay_ms(10);
+		printf("(node 1) Waiting for message\n");
+
+		uint16_t read_id;
+		uint8_t read_data[8];
+		uint8_t read_length;
+		while (!mcp_read_message(&read_id, read_data, &read_length))
+		{
+			// wait for message
+		}
+		printf("(node 1) got message\n");
+		printf("  id: %d\n", read_id);
+		printf("  data: ");
+		for (int i = 0; i < read_length; i++)
+		printf("%x ", read_data[i]);
+		printf("\n");
+		printf("  length: %d\n", read_length);
+
+		_delay_ms(1000);
 	}
 }
 
@@ -523,5 +541,5 @@ int main (void)
 
 	// test_can_loopback();
 
-	test_can_normal();
+	test_can_between_nodes();
 }
