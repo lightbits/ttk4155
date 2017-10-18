@@ -470,6 +470,38 @@ void test_mcp()
     }
 }
 
+void test_can_loopback()
+{
+    uart_init(9600);
+    mcp_init();
+    mcp_mode_loopback();
+    printf("Testing can...\n");
+    while (1)
+    {
+        uint16_t sent_id = 42;
+        uint8_t sent_data[] = { 1, 2, 3, 4, 5 };
+        uint8_t sent_length = 5;
+        mcp_send_message(sent_id, sent_data, sent_length);
+        printf("sent message\n");
+
+        _delay_ms(100);
+
+        uint16_t read_id;
+        uint8_t read_data[8];
+        uint8_t read_length;
+        if (mcp_read_message(&read_id, read_data, &read_length))
+        {
+            printf("got message\n");
+            printf("id: %d\n", read_id);
+            printf("data: ");
+            for (int i = 0; i < read_length; i++)
+                printf("%x ", read_data[i]);
+            printf("\n");
+            printf("length: %d\n", read_length);
+        }
+    }
+}
+
 int main (void)
 {
     // uart_test();
