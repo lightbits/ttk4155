@@ -111,14 +111,20 @@ void test_can_and_joystick()
 	}
 }
 
-
+void servo_position(float x) // x is between 0 and 1
+{
+	float ms = 0.9 + (2.1-0.9)*x;
+	if (ms < 0.9) ms = 0.9;
+	if (ms > 2.1) ms = 2.1;
+	pwm_pulse_duration_ms(ms);
+}
 
 void test_pwm()
 {
 	uart_init(9600);
 	printf("Testing pwm!");
 	pwm_init(50);
-	pwm_pulse_duration_ms(1.5f);
+	servo_position(0);
 	while (1)
 	{
 		
