@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "spi.h"
 #include "mcp2515.h"
+#include "pwm.h"
 
 void test_mcp()
 {
@@ -110,11 +111,26 @@ void test_can_and_joystick()
 	}
 }
 
+
+
+void test_pwm()
+{
+	uart_init(9600);
+	printf("Testing pwm!");
+	pwm_init(50);
+	pwm_pulse_duration_ms(1.5f);
+	while (1)
+	{
+		
+	}
+}
+
 int main(void)
 {
 	// uart_test();
 	// test_mcp();
 	// test_can_loopback();
 	// test_can_between_nodes();
-	test_can_and_joystick();
+	// test_can_and_joystick();
+	test_pwm();
 }
