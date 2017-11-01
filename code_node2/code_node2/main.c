@@ -262,9 +262,9 @@ int16_t motor_read_encoder()
 	set_bit(MOTOR_PORT, MOTOR_PIN_SEL);
 	_delay_us(20);
 	uint8_t low_byte = ENCODER_INPUT;
-	clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
-	_delay_us(20);
-	set_bit(MOTOR_PORT, MOTOR_PIN_RST);
+	//clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
+	//_delay_us(20);
+	//set_bit(MOTOR_PORT, MOTOR_PIN_RST);
 	set_bit(MOTOR_PORT, MOTOR_PIN_OE);
 	return ((int16_t)high_byte)<<8 | (low_byte);
 }
@@ -297,7 +297,7 @@ void test_motor()
 	printf("Testing motor...\n");
 	motor_init();
 
-	int16_t x = -50;
+	int16_t x = -70;
 	while (1)
 	{
 		printf("Sending %d\n", x);
@@ -306,7 +306,23 @@ void test_motor()
 		printf("Encoder: %d\n", encoder);
 		_delay_ms(500);
 	}
+}
 
+#define SOLENOID_PORT PORTB
+#define SOLENOID_DDR  DDRB
+#define SOLENOID_PIN  PB4
+void test_solenoid()
+{
+	uart_init(9600);
+	printf("Testing solenoid...\n");
+	set_bit(SOLENOID_DDR, PB4);
+	while (1)
+	{
+		set_bit(SOLENOID_PORT, SOLENOID_PIN);
+		_delay_ms(200);
+		clear_bit(SOLENOID_PORT, SOLENOID_PIN);
+		_delay_ms(200);
+	}
 }
 
 int main(void)
@@ -319,5 +335,6 @@ int main(void)
 	// test_pwm();
 	// test_can_joystick_servo();
 	// test_ir_adc();
-	test_motor();
+	// test_motor();
+	test_solenoid();
 }
