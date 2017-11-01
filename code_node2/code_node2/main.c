@@ -319,9 +319,11 @@ void test_solenoid()
 	while (1)
 	{
 		set_bit(SOLENOID_PORT, SOLENOID_PIN);
-		_delay_ms(200);
+		_delay_ms(20);
 		clear_bit(SOLENOID_PORT, SOLENOID_PIN);
-		_delay_ms(200);
+		_delay_ms(20);
+		set_bit(SOLENOID_PORT, SOLENOID_PIN);
+		_delay_ms(1000);
 	}
 }
 
@@ -336,5 +338,5 @@ int main(void)
 	// test_can_joystick_servo();
 	// test_ir_adc();
 	// test_motor();
-	test_solenoid();
+	// test_solenoid();
 }
