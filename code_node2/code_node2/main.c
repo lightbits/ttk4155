@@ -4,7 +4,6 @@
 #include "spi.h"
 #include "mcp2515.h"
 #include "pwm.h"
-#include "i2c.h"
 #include "motor.h"
 
 void test_mcp()
