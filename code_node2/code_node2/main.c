@@ -129,19 +129,11 @@ void test_pwm()
 	servo_position(0);
 	while (1)
 	{
-		
+
 	}
 }
 
-// max effect = 150 mW
-// max voltage = 0.42 V (no light)
-// -> max current = I = P/U = 150 mW / 0.42V = 0.357 A
-
-// the resistor needs to make the current in the circuit equal to this
-// voltage over resistor is 5V - 0.42V = 4.58V
-// U = RI -> R = U/I = 4.58 / 0.357 = 13 ohm
-
-// this will read the voltage connected to ADC channel on pin 
+// this will read the voltage connected to ADC channel on pin
 void test_ir_adc()
 {
 	uart_init(9600);
@@ -189,7 +181,7 @@ void test_ir_adc()
 		{
 			was_under_threshold = 0;
 		}
-			
+
 
 		printf("%d %d\n", avg, score);
 
@@ -283,7 +275,7 @@ void motor_velocity(int16_t velocity)
 		clear_bit(PORTH, MOTOR_PIN_DIR);
 		speed = (velocity) & 0xff;
 	}
-	
+
 	#define MAX520_ADDRESS 0b0101000
 	uint8_t command = 0b00000000;
 	uint8_t msg[] = { MAX520_ADDRESS<<1, command, speed };
