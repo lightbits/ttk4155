@@ -6,6 +6,11 @@ void oled_power_on()   { *oled_command = 0xaf; }
 void oled_power_off()  { *oled_command = 0xae; }
 void oled_invert_off() { *oled_command = 0xa6; }
 void oled_invert_on()  { *oled_command = 0xa7; }
+void oled_flip_screen()
+{
+	*oled_command = 0xc8;
+	*oled_command = 0xa1;
+}
 void oled_set_column(uint8_t column)
 {
     *oled_command = 0x21;
@@ -17,6 +22,11 @@ void oled_set_page(uint8_t page)
     *oled_command = 0x22;
     *oled_command = page; // start address
     *oled_command = 7; // end address
+}
+void oled_xy(uint8_t x, uint8_t y)
+{
+	oled_set_column(x);
+	oled_set_page(y);
 }
 void oled_horizontal_addressing_mode()
 {
@@ -50,6 +60,10 @@ void oled_init()
     oled_set_column(0);
     oled_contrast(0x50);
     oled_power_on();
+
+	// unflip screen
+	*oled_command = 0xc0;
+	*oled_command = 0xa0;
 }
 void oled_test()
 {

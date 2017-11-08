@@ -544,30 +544,144 @@ void test_can_and_joystick()
 
 /*
 NODE 1
-read joystick, button slider (adc)
-read ball break light (can)
-send controls to node 2 (can)
-play song
-if (main_menu)
-if (audio)
-if (highscore)
-if (play_game)
-if (lost_game)
-draw screen
-menu
-score (time played)
+	read joystick, button slider (adc)
+	read ball break light (can)
+	send controls to node 2 (can)
+	play song
+	if (main_menu)
+	if (audio)
+	if (highscore)
+	if (play_game)
+	if (lost_game)
+	draw screen
+	menu
+	score (time played)
 
 NODE 2
-read controls (can)
-send ball break light (can)
-set servo position (pwm duty cycle)
-set motor velocity
-activate solenoid
-read encoder
-read ir photodiode
-
-
+	read controls (can)
+	send ball break light (can)
+	set servo position (pwm duty cycle)
+	set motor velocity
+	activate solenoid
+	read encoder
+	read ir photodiode
 */
+
+void the_game()
+{
+	ext_mem_init();
+	oled_init();
+
+	const int mode_game = 0;
+	const int mode_music = 1;
+	const int mode_scores = 2;
+	const int mode_main_menu = 3;
+	int mode = mode_main_menu;
+
+	while (1)
+	{
+		// Clear screen
+		oled_xy(0,0);
+		for (int y = 0; y < 8; y++)
+		{
+			oled_xy(0,y);
+			for (int x = 0; x < 128; x++)
+				oled_set_pixels(0x00);
+		}
+
+		// Read joystick and button and slider (from ADC)
+		uint8_t joy_x = adc_read(0);
+		uint8_t joy_y = adc_read(1);
+		uint8_t button = !(adc_read(2) > 128);
+		uint8_t slider = adc_read(3);
+
+		// Check if joystick was moved up, down, left or right once
+		int joy_up,joy_down,joy_left,joy_right;
+		{
+			static int joy_was_up = 0;
+			static int joy_was_down = 0;
+			static int joy_was_right = 0;
+			static int joy_was_left = 0;
+			int joy_is_up = (joy_y < 100);
+			int joy_is_down = (joy_y > 200);
+			int joy_is_right = (joy_x < 100);
+			int joy_is_left = (joy_x > 200);
+			joy_up = !joy_was_up && joy_is_up;
+			joy_down = !joy_was_down && joy_is_down;
+			joy_left = !joy_was_left && joy_is_left;
+			joy_right = !joy_was_right && joy_is_right;
+			joy_was_up = joy_is_up;
+			joy_was_down = joy_is_down;
+			joy_was_left = joy_is_left;
+			joy_was_right = joy_is_right;
+		}
+
+		if (mode == mode_main_menu)
+		{
+			const char *entries[] = {
+				"Game",
+				"Music",
+				"Scores"
+			};
+			const int num_entries = 3;
+			static int selected_entry = 0;
+
+			// Move up or down in menu
+			if (joy_down && selected_entry < num_entries-1)
+				selected_entry++;
+			if (joy_up && selected_entry > 0)
+				selected_entry--;
+
+			// Draw menu items
+			oled_xy(0,0);
+			for (int i = 0; i < num_entries; i++)
+			{
+				oled_xy(0,i);
+				if (selected_entry == i)
+					oled_print("*** ");
+				oled_print(entries[i]);
+				if (selected_entry == i)
+					oled_print(" ***");
+			}
+
+			if (joy_right)
+			{
+				mode = selected_entry;
+			}
+		}
+		else if (mode == mode_music)
+		{
+			oled_xy(0,1);
+			oled_print("Song: <Beethoven>");
+			oled_xy(0,3);
+			oled_print("Vol:  ###########");
+
+			if (joy_left)
+				mode = mode_main_menu;
+		}
+		else if (mode == mode_scores)
+		{
+			oled_xy(0,0);
+			oled_print("1. Me");
+			oled_xy(0,1);
+			oled_print("2. Me me");
+			oled_xy(0,2);
+			oled_print("3. Me!!");
+			oled_xy(0,3);
+			oled_print("4. Me me me");
+
+			if (joy_left)
+				mode = mode_main_menu;
+		}
+		else if (mode == mode_game)
+		{
+			oled_xy(0,0);
+			oled_print("You are playing game");
+		}
+
+		_delay_ms(50);
+	}
+}
 
 int main (void)
 {
@@ -594,4 +708,6 @@ int main (void)
 	// test_can_between_nodes();
 
 	// test_can_and_joystick();
+
+	the_game();
 }
