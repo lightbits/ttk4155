@@ -1,118 +1,72 @@
 #define MOTOR_PORT    PORTH
-#define MOTOR_DDR     DDRH
 #define MOTOR_PIN_RST PH6
 #define MOTOR_PIN_OE  PH5
 #define MOTOR_PIN_EN  PH4
 #define MOTOR_PIN_SEL PH3
 #define MOTOR_PIN_DIR PH1
 
-#define ENCODER_PORT    ???
-#define ENCODER_DDR     ???
-#define ENCODER_PORT_IN ???
+#define ENCODER_DDR   DDRK
+#define ENCODER_INPUT PINK
 
-// Assumes AD0, AD1 and AD2 of the MAX520 are grounded
-#define DAC_ADDRESS 0b01010000
-
-#include "motor_i2c.c"
+// Assumes AD0,AD1,AD2 are grounded
+// (the three LSB of the address are 0)
+#define MAX520_ADDRESS 0b0101000
 
 void motor_init()
 {
     // Enable motor control pins
-    MOTOR_DDR |=
-        (1 << MOTOR_PIN_RST) |
-        (1 << MOTOR_PIN_OE) |
-        (1 << MOTOR_PIN_EN) |
-        (1 << MOTOR_PIN_SEL) |
-        (1 << MOTOR_PIN_DIR);
+    set_bit(DDRH, MOTOR_PIN_RST);
+    set_bit(DDRH, MOTOR_PIN_OE);
+    set_bit(DDRH, MOTOR_PIN_EN);
+    set_bit(DDRH, MOTOR_PIN_SEL);
+    set_bit(DDRH, MOTOR_PIN_DIR);
 
-    // Set encoder pins as input
+    // Enable encoder pins as input
     ENCODER_DDR = 0;
 
-    // todo: Should we enable pull-up resistors?
-    // ENCODER_PORT = ;
-
-    i2c_init();
-}
-
-void motor_velocity(int16_t velocity) // between -255 and +255
-{
-    // Enable motor and set direction
-    // todo: make sure I got these right?
-    if (velocity < 0)
-        MOTOR_PORT |= (1 << MOTOR_PIN_EN) | (0 << MOTOR_PIN_DIR);
-    else
-        MOTOR_PORT |= (1 << MOTOR_PIN_EN) | (1 << MOTOR_PIN_DIR);
-
-    // Send 8-bit speed to the MAX520's DAC0
-    // See figure 6 in MAX520 page 11
-    uint16_t speed = 0;
-    if (velocity < 0)
-        speed = (uint16_t)(-velocity);
-    else
-        speed = (uint16_t)(velocity);
-    uint8_t dac_byte = (uint8_t)(velocity & 0xff);
-    i2c_start_write(DAC_ADDRESS);
-    i2c_write(0b00000000);
-    i2c_write(dac_byte);
-    i2c_stop();
-
-    // todo: ensure that you call this function with sufficient time
-    // spacing for the digital value to get converted.
-}
-
-int16_t motor_read_encoder()
-{
-    // Enable output
-    clear_bit(MOTOR_PORT, MOTOR_PIN_OE);
-
-    // Select high byte
-    clear_bit(MOTOR_PORT, MOTOR_PIN_SEL);
-    _delay_us(20);
-    uint16_t high_byte = ENCODER_PORT_IN;
-
-    // Select low byte
-    set_bit(MOTOR_PORT, MOTOR_PIN_SEL);
-    _delay_us(20);
-    uint16_t high_byte = ENCODER_PORT_IN;
-
-    // Reset encoder
+    // Reset motor
     clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
     _delay_us(20);
     set_bit(MOTOR_PORT, MOTOR_PIN_RST);
 
-    // Disable output
+    // Enable I2C
+    TWI_Master_Initialise();
+    sei(); // enable interrupts
+}
+
+int16_t motor_read_encoder()
+{
+    clear_bit(MOTOR_PORT, MOTOR_PIN_OE);
+    clear_bit(MOTOR_PORT, MOTOR_PIN_SEL);
+    _delay_us(20);
+    uint8_t high_byte = ENCODER_INPUT;
+    set_bit(MOTOR_PORT, MOTOR_PIN_SEL);
+    _delay_us(20);
+    uint8_t low_byte = ENCODER_INPUT;
+    //clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
+    //_delay_us(20);
+    //set_bit(MOTOR_PORT, MOTOR_PIN_RST);
     set_bit(MOTOR_PORT, MOTOR_PIN_OE);
-
-    int16_t delta = (int16_t)((high_byte << 8) | low_byte);
-    return delta;
+    return ((int16_t)high_byte)<<8 | (low_byte);
 }
 
-void test_motor_velocity()
+void motor_velocity(int16_t velocity)
 {
-    uart_init(9600);
-    printf("Testing motor velocity...\n");
-    motor_init();
-    while (1)
+    set_bit(PORTH, MOTOR_PIN_EN);
+    uint8_t speed;
+    if (velocity < 0)
     {
-        motor_velocity(32);
-        _delay_ms(1000);
-        motor_velocity(-32);
-        _delay_ms(1000);
+        set_bit(PORTH, MOTOR_PIN_DIR);
+        speed = (-velocity) & 0xff;
     }
-}
-
-void test_motor_encoder()
-{
-    uart_init(9600);
-    printf("Testing motor...\n");
-
-    int32_t absolute = 0;
-    motor_init();
-    while (1)
+    if (velocity > 0)
     {
-        int16_t delta = motor_read_encoder();
-        printf("%d %d\n", delta, absolute);
-        absolute += delta;
-        _delay_ms(100);
+        clear_bit(PORTH, MOTOR_PIN_DIR);
+        speed = (velocity) & 0xff;
     }
+
+    uint8_t command = 0b00000000;
+    uint8_t msg[] = { MAX520_ADDRESS<<1, command, speed };
+    TWI_Start_Transceiver_With_Data(msg, sizeof(msg));
+    while (TWI_Transceiver_Busy()) ;
 }
