@@ -651,10 +651,21 @@ void the_game()
 		}
 		else if (mode == mode_music)
 		{
+			const char *songs[] = {
+				"Beethoven", "Mario"
+			};
+			const int num_songs = 2;
+			static int selected_song = 0;
+			static int volume = 128;
 			oled_xy(0,1);
-			oled_print("Song: <Beethoven>");
+			oled_print("Song: <"); 
+			oled_print(songs[selected_song]); 
+			oled_print(">");
 			oled_xy(0,3);
-			oled_print("Vol:  ###########");
+			oled_print("Vol:  ");
+			int bars = 10*volume/255;
+			for (int i = 0; i < bars; i++)
+				oled_print("#");
 
 			if (joy_left)
 				mode = mode_main_menu;
