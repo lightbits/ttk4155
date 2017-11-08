@@ -330,14 +330,13 @@ void wave_frequency(uint32_t frequency)
 		// Set pin as output (see pinout overview)
 		set_bit(DDRE, 3);
 
-		// Hardcode N value to be 8 (this divides clock frequency by 8)
-		const uint32_t N = 1024;
-		set_bit(TCCR3B, CS32);
-		clear_bit(TCCR3B, CS31);
-		set_bit(TCCR3B, CS30);
+		// Hardcode N value to be 1024
+		clear_bit(TCCR3B, CS32);
+		set_bit(TCCR3B, CS31);
+		clear_bit(TCCR3B, CS30);
 
 		// Set TOP value
-		uint16_t TOP = (uint16_t)( (F_CPU/N)/frequency - 1);
+		uint16_t TOP = (uint16_t)( (F_CPU/8)/frequency - 1);
 		OCR3A = TOP;
 	}
 }
@@ -437,6 +436,12 @@ void test_song()
 	#define NOTE_D8  4699
 	#define NOTE_DS8 4978
 
+	{
+		uint16_t TOP1 = (uint16_t)( (F_CPU/1024)/NOTE_AS6- 1);
+		uint16_t TOP2 = (uint16_t)( (F_CPU/1024)/NOTE_A6- 1);
+		printf("%d %d", TOP1, TOP2);
+	}
+
 	int song[] = {
 		NOTE_E7, NOTE_E7, 0, NOTE_E7,
 		0, NOTE_C7, NOTE_E7, 0,
@@ -474,10 +479,10 @@ void test_song()
 				_delay_ms(100);
 			}
 			else {
-				wave_frequency(song[i]);
+				wave_frequency(song[i]/2);
 				_delay_ms(100);
 				wave_frequency(0);
-				_delay_ms(50);
+				_delay_ms(100);
 			}
 		}
 	}
