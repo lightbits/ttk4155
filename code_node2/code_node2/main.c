@@ -436,12 +436,6 @@ void test_song()
 	#define NOTE_D8  4699
 	#define NOTE_DS8 4978
 
-	{
-		uint16_t TOP1 = (uint16_t)( (F_CPU/1024)/NOTE_AS6- 1);
-		uint16_t TOP2 = (uint16_t)( (F_CPU/1024)/NOTE_A6- 1);
-		printf("%d %d", TOP1, TOP2);
-	}
-
 	int song[] = {
 		NOTE_E7, NOTE_E7, 0, NOTE_E7,
 		0, NOTE_C7, NOTE_E7, 0,
@@ -479,7 +473,7 @@ void test_song()
 				_delay_ms(100);
 			}
 			else {
-				wave_frequency(song[i]/2);
+				wave_frequency(song[i]/8);
 				_delay_ms(100);
 				wave_frequency(0);
 				_delay_ms(100);
