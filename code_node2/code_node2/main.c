@@ -108,8 +108,9 @@ void test_can_and_joystick()
 		while (!mcp_read_message(&id, data, &length)) { }
 		uint8_t joy_x = data[0];
 		uint8_t joy_y = data[1];
+		uint8_t slider = data[2];
 
-		printf("(node 2) %d %d\n", joy_x, joy_y);
+		printf("(node 2) %d %d %d\n", joy_x, joy_y, slider);
 	}
 }
 
@@ -205,11 +206,12 @@ void test_can_joystick_servo()
 		while (!mcp_read_message(&id, data, &length)) { }
 		uint8_t joy_x = data[0];
 		uint8_t joy_y = data[1];
+		uint8_t slider = data[2];
 
 		float position = (float)(joy_x-28)/255;
 		servo_position(position);
 
-		printf("(node 2) %d %d\n", joy_x, joy_y);
+		printf("(node 2) %d %d %d\n", joy_x, joy_y, slider);
 	}
 }
 
@@ -219,7 +221,7 @@ void test_motor()
 	printf("Testing motor...\n");
 	motor_init();
 
-	int16_t x = -70;
+	int16_t x = 70;
 	while (1)
 	{
 		printf("Sending %d\n", x);
@@ -249,6 +251,63 @@ void test_solenoid()
 	}
 }
 
+void test_motor_with_joystick()
+{
+	uart_init(9600);
+	mcp_init();
+	mcp_mode_normal();
+	printf("Testing motor with joystick...\n");
+	motor_init();
+
+	motor_velocity(0);
+
+	#if 1
+	while (1) ;
+	#else
+	const int32_t ENCODER_MAX = 6000;
+	for (uint16_t i = 0; ; i++)
+	{
+		// read joystick and slider from CAN message
+		uint8_t joy_x,joy_y,slider;
+		{
+			uint16_t id;
+			uint8_t data[8];
+			uint8_t length;
+			while (!mcp_read_message(&id, data, &length)) { }
+			joy_x = data[0];
+			joy_y = data[1];
+			slider = data[2];
+		}
+
+		int32_t desired_position = ENCODER_MAX*(int32_t)slider/255;
+		int32_t actual_position = motor_read_encoder();
+		
+		{
+			int32_t band = 1000;
+			int32_t error = (desired_position - actual_position);
+			if (error > band)
+				motor_velocity(80);
+			else if (error < -band)
+				motor_velocity(-80);
+			else
+			{
+				if (error > 0)
+					motor_velocity(30 + (40*error)/band);
+				else
+					motor_velocity(-30 + (40*error)/band);
+			}
+		}
+
+		if (i % 10 == 0)
+		{
+			printf("%d %d\n", (int)desired_position, (int)actual_position);
+		}
+
+		_delay_ms(1);
+	}
+	#endif
+}
+
 int main(void)
 {
 	// uart_test();
@@ -261,4 +320,5 @@ int main(void)
 	// test_ir_adc();
 	// test_motor();
 	// test_solenoid();
+	test_motor_with_joystick();
 }

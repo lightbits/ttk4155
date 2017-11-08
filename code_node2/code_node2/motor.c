@@ -1,3 +1,4 @@
+#include <avr/interrupt.h>
 #include "motor.h"
 #include "i2c.h"
 

@@ -530,13 +530,44 @@ void test_can_and_joystick()
 	{
 		uint8_t joy_x = adc_read(0);
 		uint8_t joy_y = adc_read(1);
+		uint8_t button = !(adc_read(2) > 128);
+		uint8_t slider = adc_read(3);
 
-		uint8_t data[2] = { joy_x, joy_y };
+		uint8_t data[] = { joy_x, joy_y, button, slider };
 		mcp_send_message(0, data, sizeof(data));
 
-		_delay_ms(100);
+		printf("%d\n", button);
+
+		_delay_ms(10);
 	}
 }
+
+/*
+NODE 1
+read joystick, button slider (adc)
+read ball break light (can)
+send controls to node 2 (can)
+play song
+if (main_menu)
+if (audio)
+if (highscore)
+if (play_game)
+if (lost_game)
+draw screen
+menu
+score (time played)
+
+NODE 2
+read controls (can)
+send ball break light (can)
+set servo position (pwm duty cycle)
+set motor velocity
+activate solenoid
+read encoder
+read ir photodiode
+
+
+*/
 
 int main (void)
 {
@@ -562,5 +593,5 @@ int main (void)
 
 	// test_can_between_nodes();
 
-	test_can_and_joystick();
+	// test_can_and_joystick();
 }
