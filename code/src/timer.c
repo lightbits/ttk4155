@@ -4,7 +4,7 @@
 #error "You must define TIMER_CLOCK_DIVISOR (one of 1,8,64,256 or 1024)"
 #endif
 #ifndef TIMER_n
-#error "You must define TIMER_n (one of 1,3,4 and 5 ... for ATmega2560)"
+#error "You must define TIMER_n (one of 1,3 ... for ATmega162)"
 #endif
 
 typedef void (*timer_callback_t)(void);
@@ -15,16 +15,16 @@ void timer##TIMER_n_repeat(timer_callback_t f, uint16_t t);
 // by F_CPU and the chosen clock divisor, by how long it takes to count
 // to 65536:
 //
-//   duration     = t / F_CPU/DIVISOR
+//   duration     = ticks / F_CPU/DIVISOR
 //   max duration = 65536 / F_CPU/DIVISOR
 //
-// For example, with F_CPU=16MHz we have the following possible ranges:
+// For example, with F_CPU=4.9152MHz we have the following possible ranges:
 //   Divisor          Range
-//         1       4.096 ms
-//         8      32.768 ms
-//        64     262.144 ms
-//       256    1048.576 ms
-//      1024    4194.304 ms
+//         1       13.33 ms
+//         8     106.667 ms
+//        64     853.333 ms
+//       256    3413.333 ms
+//      1024   13653.333 ms
 //
 // The granularity depends on how wide your range is. For example, you
 // will not be able to sleep exactly 32.0 ms with a divisor of 1024 at
