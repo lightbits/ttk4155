@@ -8,7 +8,7 @@
 #endif
 
 typedef void (*timer_callback_t)(void);
-void timer_do_after_milliseconds(timer_callback_t f, uint16_t t);
+void timer##TIMER_n_repeat(timer_callback_t f, uint16_t t);
 
 // When called, timer_do_after_milliseconds will repeatedly execute f
 // at intervals of duration t. The maximum possible duration is given
@@ -38,18 +38,15 @@ void timer_do_after_milliseconds(timer_callback_t f, uint16_t t);
 
 #define n TIMER_n
 
-volatile timer_callback_t timer_callback = 0;
+volatile timer_callback_t timer##n_callback = 0;
 
 // see nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
 // for other interrupt vector names
-ISR(TIMER##n_COMPA_vect)
-{
-    timer_callback();
-}
+ISR(TIMER##n_COMPA_vect) { timer##n_callback(); }
 
-void timer_do_after_milliseconds(timer_callback_t callback, uint16_t milliseconds)
+void timer##n_repeat(timer_callback_t callback, uint16_t milliseconds)
 {
-    timer_callback = callback;
+    timer##n_callback = callback;
 
     // Enable Clear Timer on Compare Match (CTC) with OCRnA as TOP
     clear_bit(TCCR##nB, WGM##n3);
