@@ -7,10 +7,6 @@
 #include "spi.h"
 #include "mcp2515.h"
 
-#define TIMER_n 1
-#define TIMER_CLOCK_DIVISOR 8
-#include "timer.c"
-
 #define NRF_IMPLEMENTATION
 #define NRF_ATMEGA162_IMPLEMENTATION
 #include "nrf.c"
@@ -610,6 +606,9 @@ void the_game()
 	const uint8_t MODE_MENU = 3;
 	uint8_t mode = MODE_MENU;
 
+	#define MAIN_TICK_MS 50
+	uint32_t time_played = 0;
+
 	while (1)
 	{
         //
@@ -699,7 +698,11 @@ void the_game()
 			if (joy_up && selected > 0)
 				selected--;
             if (joy_right)
+			{
                 mode = selected;
+				if (mode == MODE_PLAY)
+					time_played = 0;
+			}
 
 			// Draw menu items
             oled_clear();
@@ -761,14 +764,16 @@ void the_game()
                 oled_print("no");
             oled_xy(0,2);
             oled_print("time: ");
-             {
-                 static char str[16];
-                 sprintf(str, "%d", 42);
-                 oled_print(str);
-             }
+			{
+				static char str[16];
+				sprintf(str, "%lu", time_played/1000);
+				oled_print(str);
+				oled_print("s");
+			}
+			time_played += MAIN_TICK_MS;
 		}
 
-		_delay_ms(50);
+		_delay_ms(MAIN_TICK_MS);
 	}
 }
 
