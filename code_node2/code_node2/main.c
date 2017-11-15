@@ -6,6 +6,7 @@
 #include "pwm.h"
 #include "motor.h"
 #include "solenoid.h"
+#include "servo.h"
 
 void test_mcp()
 {
@@ -115,19 +116,11 @@ void test_can_and_joystick()
 	}
 }
 
-void servo_position(float x) // x is between 0 and 1
-{
-	float ms = 0.9 + (2.1-0.9)*x;
-	if (ms < 0.9) ms = 0.9;
-	if (ms > 2.1) ms = 2.1;
-	pwm_pulse_duration_ms(ms);
-}
-
-void test_pwm()
+void test_servo()
 {
 	uart_init(9600);
 	printf("Testing pwm!");
-	pwm_init(50);
+	servo_init();
 	servo_position(0);
 	while (1)
 	{
@@ -196,7 +189,7 @@ void test_can_joystick_servo()
 	uart_init(9600);
 	mcp_init();
 	mcp_mode_normal();
-	pwm_init(50);
+	servo_init();
 	printf("(node 2) Testing servo control with joystick via CAN...\n");
 
 	while (1)
@@ -479,6 +472,16 @@ void test_song()
 	}
 }
 
+void the_game()
+{
+	uart_init(9600);
+	mcp_init();
+	mcp_mode_normal();
+	pwm_init(50);
+	motor_init();
+	motor_velocity(0);
+}
+
 int main(void)
 {
 	// uart_test();
@@ -486,7 +489,7 @@ int main(void)
 	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
-	// test_pwm();
+	// test_servo();
 	// test_can_joystick_servo();
 	// test_ir_adc();
 	// test_motor();
