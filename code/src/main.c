@@ -604,6 +604,7 @@ void the_game()
 	const uint8_t MODE_MUSIC = 1;
 	const uint8_t MODE_CONTROLS = 2;
 	const uint8_t MODE_MENU = 3;
+	const uint8_t MODE_LOST = 4;
 	uint8_t mode = MODE_MENU;
 
 	#define MAIN_TICK_MS 50
@@ -661,26 +662,6 @@ void the_game()
             uint8_t length;
             if (mcp_read_message(&id, data, &length))
                 light_blocked = data[0];
-        }
-
-        //
-        // Send controller input to node 2 over CAN
-        //
-        {
-            // todo: make common format between hand-controller and P1000
-            // todo: add song selection
-            uint8_t angle = 0;
-            uint8_t shoot = 0;
-            uint8_t position = 0;
-
-            angle = joy_x;
-            shoot = button;
-            position = slider;
-
-            uint8_t id = 0;
-            uint8_t is_playing = (mode == MODE_PLAY);
-            uint8_t data[] = { angle, position, shoot, is_playing };
-            mcp_send_message(id, data, sizeof(data));
         }
 
 		if (mode == MODE_MENU)
@@ -756,13 +737,7 @@ void the_game()
             oled_clear();
 			oled_xy(0,0);
 			oled_print("You are playing!");
-            oled_xy(0,1);
-            oled_print("lost: ");
-            if (light_blocked)
-                oled_print("yes");
-            else
-                oled_print("no");
-            oled_xy(0,2);
+            oled_xy(0,3);
             oled_print("time: ");
 			{
 				static char str[16];
@@ -771,6 +746,42 @@ void the_game()
 				oled_print("s");
 			}
 			time_played += MAIN_TICK_MS;
+
+			if (light_blocked)
+			{
+				mode = MODE_LOST;
+				time_played = 0;
+			}
+		}
+		else if (mode == MODE_LOST)
+		{
+			time_played += MAIN_TICK_MS;
+			oled_clear();
+			oled_xy(0,0);
+			oled_print("You lost!");
+			if (time_played >= 5000)
+				mode = MODE_MENU;
+		}
+
+		//
+		// Send controller input to node 2 over CAN
+		//
+		{
+			// todo: make common format between hand-controller and P1000
+			// todo: add song selection
+			uint8_t angle = 0;
+			uint8_t shoot = 0;
+			uint8_t position = 0;
+
+			angle = joy_x;
+			shoot = button;
+			position = slider;
+
+			uint8_t id = 0;
+			// if mode = 0 -> playing
+			// if mode = 4 -> lost
+			uint8_t data[] = { angle, position, shoot, mode };
+			mcp_send_message(id, data, sizeof(data));
 		}
 
 		_delay_ms(MAIN_TICK_MS);
