@@ -336,138 +336,267 @@ void test_song()
 	uart_init(9600);
 	printf("Testing music!");
 
-	#define NOTE_B0  31
-	#define NOTE_C1  33
-	#define NOTE_CS1 35
-	#define NOTE_D1  37
-	#define NOTE_DS1 39
-	#define NOTE_E1  41
-	#define NOTE_F1  44
-	#define NOTE_FS1 46
-	#define NOTE_G1  49
-	#define NOTE_GS1 52
-	#define NOTE_A1  55
-	#define NOTE_AS1 58
-	#define NOTE_B1  62
-	#define NOTE_C2  65
-	#define NOTE_CS2 69
-	#define NOTE_D2  73
-	#define NOTE_DS2 78
-	#define NOTE_E2  82
-	#define NOTE_F2  87
-	#define NOTE_FS2 93
-	#define NOTE_G2  98
-	#define NOTE_GS2 104
-	#define NOTE_A2  110
-	#define NOTE_AS2 117
-	#define NOTE_B2  123
-	#define NOTE_C3  131
-	#define NOTE_CS3 139
-	#define NOTE_D3  147
-	#define NOTE_DS3 156
-	#define NOTE_E3  165
-	#define NOTE_F3  175
-	#define NOTE_FS3 185
-	#define NOTE_G3  196
-	#define NOTE_GS3 208
-	#define NOTE_A3  220
-	#define NOTE_AS3 233
-	#define NOTE_B3  247
-	#define NOTE_C4  262
-	#define NOTE_CS4 277
-	#define NOTE_D4  294
-	#define NOTE_DS4 311
-	#define NOTE_E4  330
-	#define NOTE_F4  349
-	#define NOTE_FS4 370
-	#define NOTE_G4  392
-	#define NOTE_GS4 415
-	#define NOTE_A4  440
-	#define NOTE_AS4 466
-	#define NOTE_B4  494
-	#define NOTE_C5  523
-	#define NOTE_CS5 554
-	#define NOTE_D5  587
-	#define NOTE_DS5 622
-	#define NOTE_E5  659
-	#define NOTE_F5  698
-	#define NOTE_FS5 740
-	#define NOTE_G5  784
-	#define NOTE_GS5 831
-	#define NOTE_A5  880
-	#define NOTE_AS5 932
-	#define NOTE_B5  988
-	#define NOTE_C6  1047
-	#define NOTE_CS6 1109
-	#define NOTE_D6  1175
-	#define NOTE_DS6 1245
-	#define NOTE_E6  1319
-	#define NOTE_F6  1397
-	#define NOTE_FS6 1480
-	#define NOTE_G6  1568
-	#define NOTE_GS6 1661
-	#define NOTE_A6  1760
-	#define NOTE_AS6 1865
-	#define NOTE_B6  1976
-	#define NOTE_C7  2093
-	#define NOTE_CS7 2217
-	#define NOTE_D7  2349
-	#define NOTE_DS7 2489
-	#define NOTE_E7  2637
-	#define NOTE_F7  2794
-	#define NOTE_FS7 2960
-	#define NOTE_G7  3136
-	#define NOTE_GS7 3322
-	#define NOTE_A7  3520
-	#define NOTE_AS7 3729
-	#define NOTE_B7  3951
-	#define NOTE_C8  4186
-	#define NOTE_CS8 4435
-	#define NOTE_D8  4699
-	#define NOTE_DS8 4978
+	int frequency[] = {
 
-	int song[] = {
-		NOTE_E7, NOTE_E7, 0, NOTE_E7,
-		0, NOTE_C7, NOTE_E7, 0,
-		NOTE_G7, 0, 0,  0,
-		NOTE_G6, 0, 0, 0,
+		660, 660, 660, 510, 660, 770, 380,
 
-		NOTE_C7, 0, 0, NOTE_G6,
-		0, 0, NOTE_E6, 0,
-		0, NOTE_A6, 0, NOTE_B6,
-		0, NOTE_AS6, NOTE_A6, 0,
+		510, 380, 320, 440, 480, 450, 430, 380, 660, 760, 860, 700, 760, 660, 520, 580, 480,
+		510, 380, 320, 440, 480, 450, 430, 380, 660, 760, 860, 700, 760, 600, 520, 580, 480,
 
-		NOTE_G6, NOTE_E7, NOTE_G7,
-		NOTE_A7, 0, NOTE_F7, NOTE_G7,
-		0, NOTE_E7, 0, NOTE_C7,
-		NOTE_D7, NOTE_B6, 0, 0,
+		500,
 
-		NOTE_C7, 0, 0, NOTE_G6,
-		0, 0, NOTE_E6, 0,
-		0, NOTE_A6, 0, NOTE_B6,
-		0, NOTE_AS6, NOTE_A6, 0,
+		760, 720, 680, 620,
 
-		NOTE_G6, NOTE_E7, NOTE_G7,
-		NOTE_A7, 0, NOTE_F7, NOTE_G7,
-		0, NOTE_E7, 0, NOTE_C7,
-		NOTE_D7, NOTE_B6, 0, 0
+		650, 380, 430,
+
+		500, 430, 500, 570,
+
+		500,
+
+		760, 720, 680, 620,
+
+		650,
+
+		1020, 1020, 1020,
+
+		380, 500,
+
+		760, 720, 680, 620,
+
+		650, 380, 430,
+
+		500, 430, 500, 570,
+
+		585,
+
+		550,
+
+		500,
+
+		380, 500, 500, 500,
+
+		500,
+
+		760, 720, 680, 620,
+
+		650, 380, 430,
+
+		500, 430, 500, 570,
+
+		500,
+
+		760, 720, 680, 620,
+
+		650,
+
+		1020, 1020, 1020,
+
+		380, 500,
+
+		760, 720, 680, 620,
+
+		650, 380, 430,
+
+		500, 430, 500, 570,
+
+		585,
+
+		550,
+
+		500,
+
+		380, 500, 500, 500,
+
+		500, 500, 500, 500, 580, 660, 500, 430, 380,
+
+		500, 500, 500, 500, 580, 660,
+
+		870, 760,
+
+		500, 500, 500, 500, 580, 660, 500, 430, 380,
+
+		660, 660, 660, 510, 660, 770, 380
+
 	};
 
-	int num_notes = (int)(sizeof(song) / sizeof(song[0]));
+	int length[] = {
 
-	while(1){
+		100,100,100,100,100,100,100,
+
+		100,100,100,100,80,100,100,100,80,50,100,80,50,80,80,80,80,
+
+		100,100,100,100,80,100,100,100,80,50,100,80,50,80,80,80,80,100,
+
+		100,100,100,150,
+
+		150,100,100,
+
+		100,100,100,100,
+
+		100,
+
+		100,100,100,150,
+
+		200,
+
+		80,80,80,
+
+		100,100,
+
+		100,100,100,150,
+
+		150,100,100,
+
+		100,100,100,100,
+
+		100,
+
+		100,
+
+		100,
+
+		100,100,100,100,
+
+		100,
+
+		100,100,100,150,
+
+		150,100,100,
+
+		100,100,100,100,
+
+		100,
+
+		100,100,100,150,
+
+		200,
+
+		80,80,80,
+
+		100,100,
+
+		100,100,100,150,
+
+		150,100,100,
+
+		100,100,100,100,
+
+		100,
+
+		100,
+
+		100,
+
+		100,100,100,100,
+
+		60,80,60,80,80,80,80,80,80,
+
+		60,80,60,80,80,80,
+
+		80,80,
+
+		60,80,60,80,80,80,80,80,80,
+
+		100,100,100,100,100,100,100
+	};
+
+	int delay[] = {
+
+		150, 300, 300, 300, 100, 300, 550, 575,
+
+		450, 400, 500, 300, 330, 150, 300, 200, 200, 150, 300, 150, 350, 300, 150, 150, 500,
+
+		450, 400, 500, 300, 330, 150, 300, 200, 200, 150, 300, 150, 350, 300, 150, 150, 500,
+
+		300,
+
+		100, 150, 150, 300,
+
+		300, 150, 150,
+
+		300, 150, 100, 220,
+
+		300,
+
+		100, 150, 150, 300,
+
+		300,
+
+		300, 150, 300,
+
+		300, 300,
+
+		100, 150, 150, 300,
+
+		300, 150, 150,
+
+		300, 150, 100, 420,
+
+		450,
+
+		420,
+
+		360,
+
+		300, 300, 150, 300,
+
+		300,
+
+		100, 150, 150, 300,
+
+		300, 150, 150,
+
+		300, 150, 100, 220,
+
+		300,
+
+		100, 150, 150, 300,
+
+		300,
+
+		300, 150, 300,
+
+		300, 300,
+
+		100, 150, 150, 300,
+
+		300, 150, 150,
+
+		300, 150, 100, 420,
+
+		450,
+
+		420,
+
+		360,
+
+		300, 300, 150, 300,
+
+		150, 300, 350, 150, 350, 150, 300, 150, 600,
+
+		150, 300, 350, 150, 150, 550,
+
+		325, 600,
+
+		150, 300, 350, 150, 350, 150, 300, 150, 600,
+
+		150, 300, 300, 100, 300, 550, 575
+
+	};
+
+	int num_notes = (int)(sizeof(frequency) / sizeof(frequency[0]));
+
+	while(1)
+	{
 		_delay_ms(2000);
-		for (int i = 0; i < num_notes; i++){
-			if (song[i] == 0){
-				wave_frequency(0);
-				_delay_ms(100);
-			}
-			else {
-				wave_frequency(song[i]/8);
-				_delay_ms(100);
-				wave_frequency(0);
-				_delay_ms(100);
-			}
+		for (int i = 0; i < num_notes; i++)
+		{
+			wave_frequency(frequency[i]);
+			for (int j = 0; j < length[i]; j++)
+				_delay_ms(1);
+			wave_frequency(0);
+			for (int j = 0; j < delay[i]; j++)
+				_delay_ms(1);
 		}
 	}
 }
@@ -481,6 +610,9 @@ void the_game()
 	motor_velocity(0);
 	servo_init();
 	solenoid_init();
+	solenoid_pull();
+
+	printf("(node 2) OK\n");
 
 	while (1)
 	{
@@ -502,7 +634,7 @@ void the_game()
 		//
 		uint8_t ir_broken = 0;
 		{
-		    const int num_past_values = 20;
+		    #define num_past_values 20
 		    static uint16_t past_values[num_past_values]; // todo: init to zero
 
 		    // shift in latest measurement
@@ -535,8 +667,8 @@ void the_game()
 		    if (mcp_read_message(&id, data, &length))
 		    {
 		        user_angle = data[0];
-	        	user_shoot = data[1];
-		        user_position = data[2];
+				user_position = data[1];
+	        	user_shoot = data[2];
 		        user_is_playing = data[3];
 		        user_song = data[4];
 		    }
@@ -564,16 +696,16 @@ void the_game()
 		//
 		{
 		    const int32_t ENCODER_MAX = 6000;
-		    int32_t desired_position = ENCODER_MAX*(int32_t)slider/255;
+		    int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
 		    int32_t actual_position = motor_read_encoder();
 
 		    {
 		        int32_t band = 1000;
 		        int32_t error = (desired_position - actual_position);
 		        if (error > band)
-		            motor_velocity(80);
+		            motor_velocity(100);
 		        else if (error < -band)
-		            motor_velocity(-80);
+		            motor_velocity(-100);
 		        else
 		        {
 		            if (error > 0)
@@ -588,6 +720,7 @@ void the_game()
 		// Control solenoid
 		//
 		{
+			printf("%d\n", user_shoot);
 			static uint8_t is_shooting = 0;
 			if (user_shoot && !is_shooting)
 			{
@@ -601,6 +734,8 @@ void the_game()
 				is_shooting = 0;
 			}
 		}
+
+		_delay_ms(50);
 	}
 }
 
@@ -617,5 +752,6 @@ int main(void)
 	// test_motor();
 	// test_solenoid();
 	// test_motor_with_joystick();
-	test_song();
+	// test_song();
+	the_game();
 }
