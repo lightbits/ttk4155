@@ -8,6 +8,8 @@
 #include "solenoid.h"
 #include "servo.h"
 #include "../../shared.h"
+#include "music.h"
+#include "music.c"
 
 void test_mcp()
 {
@@ -299,470 +301,34 @@ void test_motor_with_joystick()
 	#endif
 }
 
-void wave_frequency(uint32_t frequency)
-{
-	if (frequency == 0)
-	{
-		clear_bit(DDRE, 3);
-	}
-	else
-	{
-		// Enable PWM on PE3/OC3A
-
-		// Enable Fast PWM with OCRnA used to define TOP
-		set_bit(TCCR3B, WGM33);
-		set_bit(TCCR3B, WGM32);
-		set_bit(TCCR3A, WGM31);
-		set_bit(TCCR3A, WGM30);
-
-		clear_bit(TCCR3A, COM3A1);
-		set_bit(TCCR3A, COM3A0);
-
-		// Set pin as output (see pinout overview)
-		set_bit(DDRE, 3);
-
-		// Hardcode N value to be 1024
-		clear_bit(TCCR3B, CS32);
-		set_bit(TCCR3B, CS31);
-		clear_bit(TCCR3B, CS30);
-
-		// Set TOP value
-		uint16_t TOP = (uint16_t)( (F_CPU/8)/frequency - 1);
-		OCR3A = TOP;
-	}
-}
-
 void test_song()
 {
 	uart_init(9600);
-	printf("Testing music!");
+	printf("Testing music!\n");
 
-	int frequency[] = {
-		330,
-		330,
-		330,
-		262,
-		330,
-		392,
-		196,
-		262,
-		196,
-		164,
-		220,
-		246,
-		233,
-		220,
-		196,
-		330,
-		392,
-		440,
-		349,
-		392,
-		330,
-		262,
-		294,
-		247,
-		262,
-		196,
-		164,
-		220,
-		246,
-		233,
-		220,
-		196,
-		330,
-		392,
-		440,
-		349,
-		392,
-		330,
-		262,
-		294,
-		247,
-		392,
-		370,
-		349,
-		311,
-		330,
-		207,
-		220,
-		262,
-		220,
-		262,
-		294,
-		392,
-		370,
-		349,
-		311,
-		330,
-		523,
-		523,
-		523,
-		392,
-		370,
-		349,
-		311,
-		330,
-		207,
-		220,
-		262,
-		220,
-		262,
-		294,
-		311,
-		296,
-		262,
-		262,
-		262,
-		262,
-		262,
-		294,
-		330,
-		262,
-		220,
-		196,
-		262,
-		262,
-		262,
-		262,
-		294,
-		330,
-		440,
-		392,
-		262,
-		262,
-		262,
-		262,
-		294,
-		330,
-		262,
-		220,
-		196,
-		330,
-		330,
-		330,
-		262,
-		330,
-		392,
-		196,
-		196,
-		262,
-		330,
-		392,
-		523,
-		660,
-		784,
-		660,
-		207,
-		262,
-		311,
-		415,
-		523,
-		622,
-		830,
-		622,
-		233,
-		294,
-		349,
-		466,
-		587,
-		698,
-		932,
-		932,
-		932,
-		932,
-		1046
-	};
+	#if 1
+	int num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
+	int *frequency = music_frequency;
+	int *length = music_length;
+	int *delay = music_delay;
+	printf("%d\n", num_notes);
+	#else
+	uint8_t mode = MODE_PLAY;
 
-	int length[] = {
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		300,
-		300,
-		300,
-		300,
-		100,
-		200,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		300,
-		300,
-		300,
-		300,
-		100,
-		200,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		300,
-		300,
-		300,
-		100,
-		100,
-		100,
-		100,
-		100,
-		200,
-		200,
-		200,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		200,
-		200,
-		200,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		100,
-		60
-	};
+	int num_notes = (int)(sizeof(music_lost_frequency) / sizeof(music_lost_frequency[0]));
+	int *frequency = music_lost_frequency;
+	int *length = music_lost_length;
+	int *delay = music_lost_delay;
 
-	int delay[] = {
-		100,
-		300,
-		300,
-		100,
-		300,
-		700,
-		700,
-		300,
-		300,
-		300,
-		100,
-		300,
-		0,
-		300,
-		150,
-		150,
-		150,
-		300,
-		100,
-		300,
-		300,
-		100,
-		100,
-		500,
-		300,
-		300,
-		300,
-		100,
-		300,
-		0,
-		300,
-		150,
-		150,
-		150,
-		300,
-		100,
-		300,
-		300,
-		100,
-		100,
-		900,
-		100,
-		100,
-		100,
-		300,
-		300,
-		100,
-		100,
-		300,
-		100,
-		100,
-		500,
-		100,
-		100,
-		100,
-		300,
-		300,
-		300,
-		100,
-		1100,
-		100,
-		100,
-		100,
-		300,
-		300,
-		100,
-		100,
-		300,
-		100,
-		100,
-		500,
-		300,
-		300,
-		1300,
-		100,
-		300,
-		300,
-		100,
-		300,
-		50,
-		50,
-		50,
-		700,
-		100,
-		300,
-		300,
-		100,
-		100,
-		700,
-		300,
-		500,
-		100,
-		300,
-		300,
-		100,
-		300,
-		50,
-		50,
-		50,
-		700,
-		100,
-		300,
-		300,
-		100,
-		300,
-		700,
-		700,
-		130,
-		130,
-		130,
-		130,
-		130,
-		130,
-		580,
-		580,
-		130,
-		130,
-		130,
-		130,
-		130,
-		130,
-		580,
-		580,
-		130,
-		130,
-		130,
-		130,
-		130,
-		130,
-		580,
-		130,
-		130,
-		130,
-		5000,
-	};
-
-	int frequency2[] = {
-		1046, 784, 659, 880, 988, 880, 831, 932, 831, 784, 740, 784
-	};
-
-	int length2[] = {
-		100, 100, 100, 50, 50, 50, 50, 50, 50, 50, 50, 200
-	};
-
-	int delay2[] = {
-		50, 50, 50, 50, 50, 50, 50, 50, 50, 20, 20, 1000
-	};
-
-
-	int num_notes = (int)(sizeof(frequency2) / sizeof(frequency2[0]));
-
+	if (mode == MODE_PLAY)
+	{
+		num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
+		*frequency = music_frequency;
+		*length = music_length;
+		*delay = music_delay;
+	}
+	#endif
+	
 	int counter = 0;
 	int note = 0;
 
@@ -770,14 +336,14 @@ void test_song()
 	while(1){
 		
 		if (counter <= MAIN_TICK_MS) {
-			wave_frequency(frequency2[note]);
+			wave_frequency(frequency[note]);
 		}
 
-		if (counter >= length2[note]*2) {
+		if (counter >= length[note]) {
 			wave_frequency(0);
 		}
 
-		if (counter >= length2[note]*2 + delay2[note]*2) {
+		if (counter >= length[note] + delay[note]) {
 			note++;
 			counter = 0;
 		}
@@ -937,6 +503,6 @@ int main(void)
 	// test_motor();
 	// test_solenoid();
 	// test_motor_with_joystick();
-	// test_song();
-	the_game();
+	test_song();
+	// the_game();
 }
