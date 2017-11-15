@@ -8,6 +8,10 @@
 #include "mcp2515.h"
 #include "can.h"
 
+#define NRF_IMPLEMENTATION
+#define NRF_ATMEGA162_IMPLEMENTATION
+#include "nrf.c"
+
 // This will repeatedly set pin 1 of port D high and low
 void test_clock(void)
 {
