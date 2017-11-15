@@ -373,12 +373,13 @@ void the_game()
 	servo_init();
 	solenoid_init();
 	solenoid_pull();
+	wave_frequency(0);
 
 	printf("(node 2) OK\n");
 
 	#define MAIN_TICK_MS 5
 
-	while (1)
+	for (int loop_iteration = 0; ; loop_iteration++)
 	{
 		//
 		// Read IR light (raw ADC voltage measurement)
@@ -455,6 +456,8 @@ void the_game()
 			else
 				motor_velocity(0);
 			servo_position((float)(user_position-28)/255);
+			if (loop_iteration % 100 == 0)
+				printf("%d\n", user_position);
 			#else
 			//
 			// Control servo angle
