@@ -717,9 +717,18 @@ void the_game()
 		}
 		else if (mode == MODE_CONTROLS)
 		{
+            static uint8_t selected = 0;
             oled_clear();
-			oled_xy(0,0);
-            oled_print("Choose controller");
+			oled_xy(0,0); oled_print("Up/Down: Change controller");
+            oled_xy(0,1); oled_print("Left: Go back");
+            oled_xy(0,2);
+            oled_print("Ctrl: ");
+            if (selected == 0)
+                oled_print("<P1000>");
+            if (selected == 1)
+                oled_print("<Remote>");
+            if (joy_up) selected = 0;
+            if (joy_down) selected = 1;
 			if (joy_left)
 				mode = MODE_MENU;
 		}
