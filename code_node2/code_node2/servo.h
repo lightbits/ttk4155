@@ -2,8 +2,8 @@
 #define SERVO_H
 #include "common.h"
 #include "pwm.h"
-void servo_init() { pwm_init(50); }
-void servo_position(float x) // x is between 0 and 1
+void servo_init() { pwm_init(50); } // 50 Hz (20 ms period)
+void servo_position(float x) // between 0 and 1
 {
     float ms = 0.9 + (2.1-0.9)*x;
     if (ms < 0.9) ms = 0.9;
