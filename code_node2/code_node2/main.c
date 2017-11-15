@@ -306,26 +306,32 @@ void test_song()
 	uart_init(9600);
 	printf("Testing music!\n");
 
-	#if 1
-	int num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
-	int *frequency = music_frequency;
-	int *length = music_length;
-	int *delay = music_delay;
-	printf("%d\n", num_notes);
-	#else
-	uint8_t mode = MODE_PLAY;
-
+	#if 0
 	int num_notes = (int)(sizeof(music_lost_frequency) / sizeof(music_lost_frequency[0]));
 	int *frequency = music_lost_frequency;
 	int *length = music_lost_length;
 	int *delay = music_lost_delay;
+	float multiplier_frequency = LOST_MULTIPLIER_FREQUENCY;
+	float multiplier_length = LOST_MULTIPLIER_LENGTH;
+	printf("%d\n", num_notes);
+	#else
+	uint8_t mode = MODE_PLAY;
 
-	if (mode == MODE_PLAY)
+	int num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
+	int *frequency = music_frequency;
+	int *length = music_length;
+	int *delay = music_delay;
+	float multiplier_frequency = MARIO_MULTIPLIER_FREQUENCY;
+	float multiplier_length = MARIO_MULTIPLIER_LENGTH;
+
+	if (mode == MODE_LOST)
 	{
-		num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
-		*frequency = music_frequency;
-		*length = music_length;
-		*delay = music_delay;
+		num_notes = (int)(sizeof(music_lost_frequency) / sizeof(music_lost_frequency[0]));
+		frequency = music_lost_frequency;
+		length = music_lost_length;
+		delay = music_lost_delay;
+		multiplier_frequency = LOST_MULTIPLIER_FREQUENCY;
+		multiplier_length = LOST_MULTIPLIER_LENGTH;
 	}
 	#endif
 	
@@ -336,14 +342,14 @@ void test_song()
 	while(1){
 		
 		if (counter <= MAIN_TICK_MS) {
-			wave_frequency(frequency[note]);
+			wave_frequency(frequency[note]*multiplier_frequency);
 		}
 
-		if (counter >= length[note]) {
+		if (counter >= length[note]*multiplier_length) {
 			wave_frequency(0);
 		}
 
-		if (counter >= length[note] + delay[note]) {
+		if (counter >= length[note]*multiplier_length + delay[note]*multiplier_length) {
 			note++;
 			counter = 0;
 		}
@@ -503,6 +509,6 @@ int main(void)
 	// test_motor();
 	// test_solenoid();
 	// test_motor_with_joystick();
-	test_song();
-	// the_game();
+	// test_song();
+	the_game();
 }
