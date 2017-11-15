@@ -7,6 +7,6 @@
 #define SOLENOID_DDR  DDRB
 #define SOLENOID_PIN  PB4
 void solenoid_init() { set_bit(SOLENOID_DDR, SOLENOID_PIN); }
-void solenoid_push() { set_bit(SOLENOID_PORT, SOLENOID_PIN); }
-void solenoid_pull() { clear_bit(SOLENOID_PORT, SOLENOID_PIN); }
+void solenoid_pull() { set_bit(SOLENOID_PORT, SOLENOID_PIN); }
+void solenoid_push() { clear_bit(SOLENOID_PORT, SOLENOID_PIN); }
 #endif

@@ -586,18 +586,30 @@ void test_song()
 
 	int num_notes = (int)(sizeof(frequency) / sizeof(frequency[0]));
 
-	while(1)
-	{
-		_delay_ms(2000);
-		for (int i = 0; i < num_notes; i++)
-		{
-			wave_frequency(frequency[i]);
-			for (int j = 0; j < length[i]; j++)
-				_delay_ms(1);
-			wave_frequency(0);
-			for (int j = 0; j < delay[i]; j++)
-				_delay_ms(1);
+	int counter = 0;
+	int note = 0;
+
+	#define MAIN_TICK_MS 5
+	while(1){
+		
+		if (counter <= MAIN_TICK_MS) {
+			wave_frequency(frequency[note]);
 		}
+
+		if (counter >= length[note]) {
+			wave_frequency(0);
+		}
+
+		if (counter == length[note] + delay[note]) {
+			note++;
+			counter = 0;
+		}
+
+		if (note == num_notes)
+			note = 0;
+		
+		_delay_ms(MAIN_TICK_MS);
+		counter += MAIN_TICK_MS;
 	}
 }
 
@@ -613,6 +625,8 @@ void the_game()
 	solenoid_pull();
 
 	printf("(node 2) OK\n");
+
+	while (1) ;
 
 	while (1)
 	{
@@ -721,18 +735,22 @@ void the_game()
 		//
 		{
 			printf("%d\n", user_shoot);
-			static uint8_t is_shooting = 0;
-			if (user_shoot && !is_shooting)
-			{
-				is_shooting = 1;
+			if (user_shoot)
 				solenoid_push();
-				_delay_ms(20);
+			else
 				solenoid_pull();
-			}
-			if (!user_shoot)
-			{
-				is_shooting = 0;
-			}
+			//static uint8_t is_shooting = 0;
+			//if (user_shoot && !is_shooting)
+			//{
+				//is_shooting = 1;
+				//solenoid_push();
+				//_delay_ms(20);
+				//solenoid_pull();
+			//}
+			//if (!user_shoot)
+			//{
+				//is_shooting = 0;
+			//}
 		}
 
 		_delay_ms(50);
