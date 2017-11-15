@@ -747,8 +747,20 @@ void test_song()
 		5000,
 	};
 
+	int frequency2[] = {
+		1046, 784, 659, 880, 988, 880, 831, 932, 831, 784, 740, 784
+	};
 
-	int num_notes = (int)(sizeof(frequency) / sizeof(frequency[0]));
+	int length2[] = {
+		100, 100, 100, 50, 50, 50, 50, 50, 50, 50, 50, 200
+	};
+
+	int delay2[] = {
+		50, 50, 50, 50, 50, 50, 50, 50, 50, 20, 20, 1000
+	};
+
+
+	int num_notes = (int)(sizeof(frequency2) / sizeof(frequency2[0]));
 
 	int counter = 0;
 	int note = 0;
@@ -757,14 +769,14 @@ void test_song()
 	while(1){
 		
 		if (counter <= MAIN_TICK_MS) {
-			wave_frequency(frequency[note]*4);
+			wave_frequency(frequency2[note]);
 		}
 
-		if (counter >= length[note]/1.5) {
+		if (counter >= length2[note]*2) {
 			wave_frequency(0);
 		}
 
-		if (counter >= length[note]/1.5 + delay[note]/1.5) {
+		if (counter >= length2[note]*2 + delay2[note]*2) {
 			note++;
 			counter = 0;
 		}
@@ -896,7 +908,6 @@ void the_game()
 		// Control solenoid
 		//
 		{
-			printf("%d\n", user_shoot);
 			if (user_shoot)
 				solenoid_push();
 			else
@@ -914,6 +925,8 @@ void the_game()
 				//is_shooting = 0;
 			//}
 		}
+
+		printf("(node 2) %d %d\n", ir_raw, user_shoot);
 
 		_delay_ms(50);
 	}
