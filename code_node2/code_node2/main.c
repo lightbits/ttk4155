@@ -477,9 +477,131 @@ void the_game()
 	uart_init(9600);
 	mcp_init();
 	mcp_mode_normal();
-	pwm_init(50);
 	motor_init();
 	motor_velocity(0);
+	servo_init();
+	solenoid_init();
+
+	while (1)
+	{
+		//
+		// Read IR light (raw ADC voltage measurement)
+		// Voltage is high when light is shining on the diode, and low otherwise
+		//
+		uint16_t ir_raw = 0;
+		{
+		    ADCSRA = (1 << ADEN); // Enable ADC
+		    ADMUX = (1 << REFS0); // Use AVCC as voltage source
+		    set_bit(ADCSRA, ADSC); // Start conversion
+		    while (test_bit(ADCSRA, ADSC)) ; // wait until done
+		    ir_raw = ADC;
+		}
+
+		//
+		// Filter IR light into broken/not_broken signal
+		//
+		uint8_t ir_broken = 0;
+		{
+		    const int num_past_values = 20;
+		    static uint16_t past_values[num_past_values]; // todo: init to zero
+
+		    // shift in latest measurement
+		    for (int i = 0; i < num_past_values - 1; i++)
+		        past_values[i] = past_values[i+1];
+		    past_values[num_past_values-1] = ir_raw;
+
+		    // compute average
+		    uint16_t sum = 0;
+		    for (int i = 0; i < num_past_values; i++)
+		        sum += past_values[i];
+		    uint16_t avg = sum / num_past_values;
+
+		    // simple filter... the average is reacts slower than instant measurements
+		    ir_broken = (avg < 10) ? 1 : 0;
+		}
+
+		//
+		// Poll game controls from node 1 over CAN
+		//
+		static uint8_t user_angle = 127;
+		static uint8_t user_shoot = 0;
+		static uint8_t user_position = 0;
+		static uint8_t user_is_playing = 0;
+		static uint8_t user_song = 0;
+		{
+		    uint16_t id;
+		    uint8_t data[8];
+		    uint8_t length;
+		    if (mcp_read_message(&id, data, &length))
+		    {
+		        user_angle = data[0];
+	        	user_shoot = data[1];
+		        user_position = data[2];
+		        user_is_playing = data[3];
+		        user_song = data[4];
+		    }
+		}
+
+		//
+		// Send IR signal to node 1
+		//
+		{
+		    uint16_t id = 1;
+		    uint8_t data[] = { ir_broken };
+		    mcp_send_message(id, data, (uint8_t)sizeof(data));
+		}
+
+		//
+		// Control servo angle
+		//
+		{
+		    float position = (float)(user_angle-28)/255;
+		    servo_position(position);
+		}
+
+		//
+		// Control motor position
+		//
+		{
+		    const int32_t ENCODER_MAX = 6000;
+		    int32_t desired_position = ENCODER_MAX*(int32_t)slider/255;
+		    int32_t actual_position = motor_read_encoder();
+
+		    {
+		        int32_t band = 1000;
+		        int32_t error = (desired_position - actual_position);
+		        if (error > band)
+		            motor_velocity(80);
+		        else if (error < -band)
+		            motor_velocity(-80);
+		        else
+		        {
+		            if (error > 0)
+		                motor_velocity(30 + (40*error)/band);
+		            else
+		                motor_velocity(-30 + (40*error)/band);
+		        }
+		    }
+		}
+
+		//
+		// Control solenoid
+		//
+		{
+			static uint8_t is_shooting = 0;
+			if (user_shoot && !is_shooting)
+			{
+				is_shooting = 1;
+				solenoid_push();
+				_delay_ms(20);
+				solenoid_pull();
+			}
+			if (!user_shoot)
+			{
+				is_shooting = 0;
+			}
+		}
+	}
 }
 
 int main(void)
