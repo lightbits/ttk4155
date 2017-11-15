@@ -584,16 +584,21 @@ void oled_clear()
 
 void the_game()
 {
+	#define FLIP_SCREEN 1
+
     uart_init(9600);
     printf("external memory...\n");
 	ext_mem_init();
     printf("oled...\n");
 	oled_init();
-	oled_flip_screen();
     printf("mcp...\n");
     mcp_init();
     mcp_mode_normal();
     printf("ok!\n");
+
+	#if FLIP_SCREEN
+	oled_flip_screen();
+	#endif
 
 	const uint8_t MODE_PLAY = 0;
 	const uint8_t MODE_MUSIC = 1;
@@ -621,17 +626,16 @@ void the_game()
 			static uint8_t joy_was_down = 0;
 			static uint8_t joy_was_right = 0;
 			static uint8_t joy_was_left = 0;
-			#if 0
-			uint8_t joy_is_up = (joy_y < 100);
-			uint8_t joy_is_down = (joy_y > 200);
-			uint8_t joy_is_right = (joy_x < 100);
-			uint8_t joy_is_left = (joy_x > 200);
-			#else
-			// Flipped controls
+			#if FLIP_SCREEN
 			uint8_t joy_is_up = (joy_y > 200);
 			uint8_t joy_is_down = (joy_y < 100);
 			uint8_t joy_is_right = (joy_x > 200);
 			uint8_t joy_is_left = (joy_x < 100);
+			#else
+			uint8_t joy_is_up = (joy_y < 100);
+			uint8_t joy_is_down = (joy_y > 200);
+			uint8_t joy_is_right = (joy_x < 100);
+			uint8_t joy_is_left = (joy_x > 200);
 			#endif
 			joy_up = !joy_was_up && joy_is_up;
 			joy_down = !joy_was_down && joy_is_down;
@@ -753,11 +757,11 @@ void the_game()
                 oled_print("no");
             oled_xy(0,2);
             oled_print("time: ");
-            // {
-            //     static char str[16];
-            //     sprintf(str, "%d", 42);
-            //     oled_print(str);
-            // }
+             {
+                 static char str[16];
+                 sprintf(str, "%d", 42);
+                 oled_print(str);
+             }
 		}
 
 		_delay_ms(50);
