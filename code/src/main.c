@@ -700,14 +700,20 @@ void the_game()
 		{
 			const char *songs[] = { "Beethoven", "Mario" };
 			const uint8_t num_songs = 2;
-			static uint8_t selected_song = 0;
+			static uint8_t selected = 0;
             oled_clear();
-			oled_xy(0,1);
-			oled_print("Song: <");
-			oled_print(songs[selected_song]);
-			oled_print(">");
+            oled_xy(0,0); oled_print("Up/Down: Change song");
+            oled_xy(0,1); oled_print("Left: Go back");
+			oled_xy(0,2);
+            oled_print("Song: <");
+			oled_print(songs[selected]);
+            oled_print(">");
 			if (joy_left)
 				mode = MODE_MENU;
+            if (joy_down && selected > 0)
+                selected--;
+            if (joy_up && selected < num_songs-1)
+                selected++;
 		}
 		else if (mode == MODE_CONTROLS)
 		{
