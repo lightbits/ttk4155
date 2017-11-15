@@ -1,4 +1,3 @@
-
 #include "pwm.h"
 
 // This enables PWM signal generation on OC1B (PB6)
