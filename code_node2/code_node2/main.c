@@ -5,6 +5,7 @@
 #include "mcp2515.h"
 #include "pwm.h"
 #include "motor.h"
+#include "solenoid.h"
 
 void test_mcp()
 {
@@ -232,21 +233,17 @@ void test_motor()
 	}
 }
 
-#define SOLENOID_PORT PORTB
-#define SOLENOID_DDR  DDRB
-#define SOLENOID_PIN  PB4
 void test_solenoid()
 {
 	uart_init(9600);
 	printf("Testing solenoid...\n");
-	set_bit(SOLENOID_DDR, PB4);
+	solenoid_init();
+	solenoid_pull();
 	while (1)
 	{
-		set_bit(SOLENOID_PORT, SOLENOID_PIN);
+		solenoid_push();
 		_delay_ms(20);
-		clear_bit(SOLENOID_PORT, SOLENOID_PIN);
-		_delay_ms(20);
-		set_bit(SOLENOID_PORT, SOLENOID_PIN);
+		solenoid_pull();
 		_delay_ms(1000);
 	}
 }
@@ -281,7 +278,7 @@ void test_motor_with_joystick()
 
 		int32_t desired_position = ENCODER_MAX*(int32_t)slider/255;
 		int32_t actual_position = motor_read_encoder();
-		
+
 		{
 			int32_t band = 1000;
 			int32_t error = (desired_position - actual_position);
@@ -446,17 +443,17 @@ void test_song()
 		0, 0, NOTE_E6, 0,
 		0, NOTE_A6, 0, NOTE_B6,
 		0, NOTE_AS6, NOTE_A6, 0,
-		
+
 		NOTE_G6, NOTE_E7, NOTE_G7,
 		NOTE_A7, 0, NOTE_F7, NOTE_G7,
 		0, NOTE_E7, 0, NOTE_C7,
 		NOTE_D7, NOTE_B6, 0, 0,
-		
+
 		NOTE_C7, 0, 0, NOTE_G6,
 		0, 0, NOTE_E6, 0,
 		0, NOTE_A6, 0, NOTE_B6,
 		0, NOTE_AS6, NOTE_A6, 0,
-		
+
 		NOTE_G6, NOTE_E7, NOTE_G7,
 		NOTE_A7, 0, NOTE_F7, NOTE_G7,
 		0, NOTE_E7, 0, NOTE_C7,
