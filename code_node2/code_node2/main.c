@@ -360,6 +360,7 @@ void test_song()
 		_delay_ms(MAIN_TICK_MS);
 		counter += MAIN_TICK_MS;
 	}
+	#undef MAIN_TICK_MS
 }
 
 void the_game()
@@ -374,6 +375,8 @@ void the_game()
 	solenoid_pull();
 
 	printf("(node 2) OK\n");
+
+	#define MAIN_TICK_MS 5
 
 	while (1)
 	{
@@ -460,8 +463,6 @@ void the_game()
 				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
 				int32_t actual_position = motor_read_encoder();
 
-				printf("%d %d\n", user_position, (int)actual_position);
-
 				{
 					int32_t band = 1000;
 					int32_t error = (desired_position - actual_position);
@@ -490,9 +491,60 @@ void the_game()
 			}
 		}
 
+		//
+		// Play music
+		//
+		if (user_mode == MODE_PLAY || user_mode == MODE_LOST)
+		{
+			static int prev_mode = -1;
+			static int counter = 0;
+			static int note = 0;
+			if (prev_mode != user_mode)
+			{
+				counter = 0;
+				note = 0;
+				prev_mode = user_mode;
+			}
+			
+			int num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
+			int *frequency = music_frequency;
+			int *length = music_length;
+			int *delay = music_delay;
+			float multiplier_frequency = MARIO_MULTIPLIER_FREQUENCY;
+			float multiplier_length = MARIO_MULTIPLIER_LENGTH;
+
+			if (user_mode == MODE_LOST)
+			{
+				num_notes = (int)(sizeof(music_lost_frequency) / sizeof(music_lost_frequency[0]));
+				frequency = music_lost_frequency;
+				length = music_lost_length;
+				delay = music_lost_delay;
+				multiplier_frequency = LOST_MULTIPLIER_FREQUENCY;
+				multiplier_length = LOST_MULTIPLIER_LENGTH;
+			}
+				
+			if (counter <= MAIN_TICK_MS) {
+				wave_frequency(frequency[note]*multiplier_frequency);
+			}
+
+			if (counter >= length[note]*multiplier_length) {
+				wave_frequency(0);
+			}
+
+			if (counter >= length[note]*multiplier_length + delay[note]*multiplier_length) {
+				note++;
+				counter = 0;
+			}
+
+			if (note == num_notes)
+				note = 0;
+			
+			counter += MAIN_TICK_MS;
+		}
+
 		// printf("(node 2) %d %d\n", ir_raw, user_shoot);
 
-		_delay_ms(50);
+		_delay_ms(MAIN_TICK_MS);
 	}
 }
 
