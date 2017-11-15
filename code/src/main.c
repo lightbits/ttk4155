@@ -782,6 +782,30 @@ void the_game()
 	}
 }
 
+void test_nrf()
+{
+	uart_init(9600);
+	ext_mem_init();
+
+	oled_init();
+	oled_flip_screen();
+
+	oled_clear();
+	oled_xy(0,0);
+	oled_print("woo");
+
+	SPI_init();
+
+	nrf_init();
+	uint8_t status = nrf_read_status();
+
+	oled_xy(0,1);
+	if (status > 0)
+		oled_print("it works");
+	else
+		oled_print("fuck");
+}
+
 int main (void)
 {
     // uart_test();
@@ -808,5 +832,7 @@ int main (void)
 
 	// test_can_and_joystick();
 
-	the_game();
+	test_nrf();
+
+	// the_game();
 }
