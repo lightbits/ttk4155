@@ -217,12 +217,6 @@
     <Compile Include="src\adc.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\can.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\can.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\extmem.c">
       <SubType>compile</SubType>
     </Compile>

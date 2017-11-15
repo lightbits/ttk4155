@@ -6,7 +6,6 @@
 #include "font.h"
 #include "spi.h"
 #include "mcp2515.h"
-#include "can.h"
 
 #define NRF_IMPLEMENTATION
 #define NRF_ATMEGA162_IMPLEMENTATION
@@ -590,6 +589,7 @@ void the_game()
 	ext_mem_init();
     printf("oled...\n");
 	oled_init();
+	oled_flip_screen();
     printf("mcp...\n");
     mcp_init();
     mcp_mode_normal();
@@ -621,10 +621,18 @@ void the_game()
 			static uint8_t joy_was_down = 0;
 			static uint8_t joy_was_right = 0;
 			static uint8_t joy_was_left = 0;
+			#if 0
 			uint8_t joy_is_up = (joy_y < 100);
 			uint8_t joy_is_down = (joy_y > 200);
 			uint8_t joy_is_right = (joy_x < 100);
 			uint8_t joy_is_left = (joy_x > 200);
+			#else
+			// Flipped controls
+			uint8_t joy_is_up = (joy_y > 200);
+			uint8_t joy_is_down = (joy_y < 100);
+			uint8_t joy_is_right = (joy_x > 200);
+			uint8_t joy_is_left = (joy_x < 100);
+			#endif
 			joy_up = !joy_was_up && joy_is_up;
 			joy_down = !joy_was_down && joy_is_down;
 			joy_left = !joy_was_left && joy_is_left;
@@ -702,9 +710,9 @@ void the_game()
 			const uint8_t num_songs = 2;
 			static uint8_t selected = 0;
             oled_clear();
-            oled_xy(0,0); oled_print("Up/Down: Change song");
+            oled_xy(0,0); oled_print("Up/Down: Select");
             oled_xy(0,1); oled_print("Left: Go back");
-			oled_xy(0,2);
+			oled_xy(0,3);
             oled_print("Song: <");
 			oled_print(songs[selected]);
             oled_print(">");
@@ -719,9 +727,9 @@ void the_game()
 		{
             static uint8_t selected = 0;
             oled_clear();
-			oled_xy(0,0); oled_print("Up/Down: Change controller");
+			oled_xy(0,0); oled_print("Up/Down: Select");
             oled_xy(0,1); oled_print("Left: Go back");
-            oled_xy(0,2);
+            oled_xy(0,3);
             oled_print("Ctrl: ");
             if (selected == 0)
                 oled_print("<P1000>");

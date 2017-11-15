@@ -54,14 +54,16 @@ void nrf_pin_enable()
 #define NRF_PORT    B
 #define NRF_CE_PIN  PB0
 #define NRF_CSN_PIN PB1
-void nrf_spi_select() { clear_bit(PORT##NRF_PORT, NRF_CSN_PIN); }
-void nrf_spi_deselect() { set_bit(PORT##NRF_PORT, NRF_CSN_PIN); }
-void nrf_chip_enable() { set_bit(PORT##NRF_PORT, NRF_CE_PIN); }
-void nrf_chip_disable() { clear_bit(PORT##NRF_PORT, NRF_CE_PIN); }
+// todo: rename
+uint8_t spi_send(uint8_t data) { return SPI_write(data); }
+void nrf_spi_select() { clear_bit(PORTB, NRF_CSN_PIN); }
+void nrf_spi_deselect() { set_bit(PORTB, NRF_CSN_PIN); }
+void nrf_chip_enable() { set_bit(PORTB, NRF_CE_PIN); }
+void nrf_chip_disable() { clear_bit(PORTB, NRF_CE_PIN); }
 void nrf_pin_enable()
 {
-    set_bit(DDR##NRF_PORT, NRF_CE_PIN);
-    set_bit(DDR##NRF_PORT, NRF_CSN_PIN);
+    set_bit(DDRB, NRF_CE_PIN);
+    set_bit(DDRB, NRF_CSN_PIN);
 }
 #endif
 
