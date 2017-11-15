@@ -567,45 +567,60 @@ NODE 2
 	read ir photodiode
 */
 
+// Fill OLED with zeros
+void oled_clear()
+{
+    oled_xy(0,0);
+    for (int y = 0; y < 8; y++)
+    {
+        oled_xy(0,y);
+        for (int x = 0; x < 128; x++)
+            oled_set_pixels(0x00);
+    }
+}
+
 void the_game()
 {
+    uart_init(9600);
+    printf("external memory...\n");
 	ext_mem_init();
+    printf("oled...\n");
 	oled_init();
+    printf("mcp...\n");
+    mcp_init();
+    mcp_mode_normal();
+    printf("ok!\n");
 
-	const int mode_game = 0;
-	const int mode_music = 1;
-	const int mode_scores = 2;
-	const int mode_main_menu = 3;
-	int mode = mode_main_menu;
+	const uint8_t MODE_PLAY = 0;
+	const uint8_t MODE_MUSIC = 1;
+	const uint8_t MODE_CONTROLS = 2;
+	const uint8_t MODE_MENU = 3;
+	uint8_t mode = MODE_MENU;
 
 	while (1)
 	{
-		// Clear screen
-		oled_xy(0,0);
-		for (int y = 0; y < 8; y++)
-		{
-			oled_xy(0,y);
-			for (int x = 0; x < 128; x++)
-				oled_set_pixels(0x00);
-		}
-
+        //
 		// Read joystick and button and slider (from ADC)
+        //
 		uint8_t joy_x = adc_read(0);
 		uint8_t joy_y = adc_read(1);
 		uint8_t button = !(adc_read(2) > 128);
 		uint8_t slider = adc_read(3);
 
+        //
 		// Check if joystick was moved up, down, left or right once
-		int joy_up,joy_down,joy_left,joy_right;
+        // (used to navigate menu)
+        //
+		uint8_t joy_up,joy_down,joy_left,joy_right;
 		{
-			static int joy_was_up = 0;
-			static int joy_was_down = 0;
-			static int joy_was_right = 0;
-			static int joy_was_left = 0;
-			int joy_is_up = (joy_y < 100);
-			int joy_is_down = (joy_y > 200);
-			int joy_is_right = (joy_x < 100);
-			int joy_is_left = (joy_x > 200);
+			static uint8_t joy_was_up = 0;
+			static uint8_t joy_was_down = 0;
+			static uint8_t joy_was_right = 0;
+			static uint8_t joy_was_left = 0;
+			uint8_t joy_is_up = (joy_y < 100);
+			uint8_t joy_is_down = (joy_y > 200);
+			uint8_t joy_is_right = (joy_x < 100);
+			uint8_t joy_is_left = (joy_x > 200);
 			joy_up = !joy_was_up && joy_is_up;
 			joy_down = !joy_was_down && joy_is_down;
 			joy_left = !joy_was_left && joy_is_left;
@@ -616,78 +631,102 @@ void the_game()
 			joy_was_right = joy_is_right;
 		}
 
-		if (mode == mode_main_menu)
+        //
+        // Node 2 tells us if the ball is blocking the IR light beam
+        // (over CAN bus)
+        //
+        uint8_t light_blocked = 0;
+        {
+            uint16_t id;
+            uint8_t data[8];
+            uint8_t length;
+            if (mcp_read_message(&id, data, &length))
+                light_blocked = data[0];
+        }
+
+        //
+        // Send controller input to node 2 over CAN
+        //
+        {
+            // todo: make common format between hand-controller and P1000
+            // todo: add song selection
+            uint8_t angle = 0;
+            uint8_t shoot = 0;
+            uint8_t position = 0;
+
+            angle = joy_x;
+            shoot = button;
+            position = slider;
+
+            uint8_t id = 0;
+            uint8_t is_playing = (mode == MODE_PLAY);
+            uint8_t data[] = { angle, position, shoot, is_playing };
+            mcp_send_message(id, data, sizeof(data));
+        }
+
+		if (mode == MODE_MENU)
 		{
-			const char *entries[] = {
-				"Game",
-				"Music",
-				"Scores"
-			};
-			const int num_entries = 3;
-			static int selected_entry = 0;
+            // todo: ensure that these are synchronized in order with
+            // MODE_PLAY, MODE_MUSIC, MODE_CONTROLS, ... if you add
+            // new items.
+			const char *items[] = { "Play", "Music", "Controls" };
+			const uint8_t num_items = 3;
+			static uint8_t selected = 0;
 
 			// Move up or down in menu
-			if (joy_down && selected_entry < num_entries-1)
-				selected_entry++;
-			if (joy_up && selected_entry > 0)
-				selected_entry--;
+			if (joy_down && selected < num_items-1)
+				selected++;
+			if (joy_up && selected > 0)
+				selected--;
+            if (joy_right)
+                mode = selected;
 
 			// Draw menu items
+            oled_clear();
 			oled_xy(0,0);
-			for (int i = 0; i < num_entries; i++)
+			for (uint8_t i = 0; i < num_items; i++)
 			{
 				oled_xy(0,i);
-				if (selected_entry == i)
-					oled_print("*** ");
-				oled_print(entries[i]);
-				if (selected_entry == i)
-					oled_print(" ***");
-			}
-
-			if (joy_right)
-			{
-				mode = selected_entry;
+				if (selected == i)
+					oled_print("--> ");
+				oled_print(items[i]);
 			}
 		}
-		else if (mode == mode_music)
+		else if (mode == MODE_MUSIC)
 		{
-			const char *songs[] = {
-				"Beethoven", "Mario"
-			};
-			const int num_songs = 2;
-			static int selected_song = 0;
-			static int volume = 128;
+			const char *songs[] = { "Beethoven", "Mario" };
+			const uint8_t num_songs = 2;
+			static uint8_t selected_song = 0;
+            oled_clear();
 			oled_xy(0,1);
-			oled_print("Song: <"); 
-			oled_print(songs[selected_song]); 
+			oled_print("Song: <");
+			oled_print(songs[selected_song]);
 			oled_print(">");
-			oled_xy(0,3);
-			oled_print("Vol:  ");
-			int bars = 10*volume/255;
-			for (int i = 0; i < bars; i++)
-				oled_print("#");
-
 			if (joy_left)
-				mode = mode_main_menu;
+				mode = MODE_MENU;
 		}
-		else if (mode == mode_scores)
+		else if (mode == MODE_CONTROLS)
 		{
+            oled_clear();
 			oled_xy(0,0);
-			oled_print("1. Me");
-			oled_xy(0,1);
-			oled_print("2. Me me");
-			oled_xy(0,2);
-			oled_print("3. Me!!");
-			oled_xy(0,3);
-			oled_print("4. Me me me");
-
+            oled_print("Choose controller");
 			if (joy_left)
-				mode = mode_main_menu;
+				mode = MODE_MENU;
 		}
-		else if (mode == mode_game)
+		else if (mode == MODE_PLAY)
 		{
+            oled_clear();
 			oled_xy(0,0);
-			oled_print("You are playing game");
+			oled_print("You are playing!");
+            oled_xy(0,1);
+            oled_print("lost: ");
+            if (light_blocked)
+                oled_print("yes");
+            else
+                oled_print("no");
+            oled_xy(0,2);
+            oled_print("time: ");
+            // todo: add timer, add printf
 		}
 
 		_delay_ms(50);
