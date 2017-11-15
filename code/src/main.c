@@ -755,7 +755,7 @@ void the_game()
 			oled_clear();
 			oled_xy(0,0);
 			oled_print("You lost!");
-			if (time_played >= 5000)
+			if (time_played >= 3500)
 				mode = MODE_MENU;
 		}
 
