@@ -745,7 +745,11 @@ void the_game()
                 oled_print("no");
             oled_xy(0,2);
             oled_print("time: ");
-            // todo: add timer, add printf
+            // {
+            //     static char str[16];
+            //     sprintf(str, "%d", 42);
+            //     oled_print(str);
+            // }
 		}
 
 		_delay_ms(50);
