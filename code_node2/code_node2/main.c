@@ -447,6 +447,15 @@ void the_game()
 
 		if (user_mode == MODE_PLAY)
 		{
+			#if 1
+			if (user_angle < 100)
+				motor_velocity(100);
+			else if (user_angle > 150)
+				motor_velocity(-100);
+			else
+				motor_velocity(0);
+			servo_position((float)(user_position-28)/255);
+			#else
 			//
 			// Control servo angle
 			//
@@ -479,6 +488,7 @@ void the_game()
 					}
 				}
 			}
+			#endif
 
 			//
 			// Control solenoid
