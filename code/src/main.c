@@ -774,8 +774,6 @@ void the_game()
 			position = slider;
 
 			uint8_t id = 0;
-			// if mode = 0 -> playing
-			// if mode = 4 -> lost
 			uint8_t data[] = { angle, position, shoot, mode };
 			mcp_send_message(id, data, sizeof(data));
 		}
