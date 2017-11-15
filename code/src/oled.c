@@ -101,3 +101,4 @@ void oled_set_pixels(uint8_t pixels)
     *oled_data = pixels;
 	//_delay_ms(10);
 }
+

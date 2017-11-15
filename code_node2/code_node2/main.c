@@ -7,6 +7,7 @@
 #include "motor.h"
 #include "solenoid.h"
 #include "servo.h"
+#include "../../shared.h"
 
 void test_mcp()
 {
@@ -820,7 +821,7 @@ void the_game()
 		//
 		// Filter IR light into broken/not_broken signal
 		//
-		uint8_t ir_broken = 0;
+		uint8_t light_broken = 0;
 		{
 		    #define num_past_values 20
 		    static uint16_t past_values[num_past_values]; // todo: init to zero
@@ -837,7 +838,7 @@ void the_game()
 		    uint16_t avg = sum / num_past_values;
 
 		    // simple filter... the average is reacts slower than instant measurements
-		    ir_broken = (avg < 10) ? 1 : 0;
+		    light_broken = (avg < 10) ? 1 : 0;
 		}
 
 		//
@@ -846,8 +847,7 @@ void the_game()
 		static uint8_t user_angle = 127;
 		static uint8_t user_shoot = 0;
 		static uint8_t user_position = 0;
-		static uint8_t user_is_playing = 0;
-		static uint8_t user_song = 0;
+		static uint8_t user_mode = MODE_MENU;
 		{
 		    uint16_t id;
 		    uint8_t data[8];
@@ -857,8 +857,7 @@ void the_game()
 		        user_angle = data[0];
 				user_position = data[1];
 	        	user_shoot = data[2];
-		        user_is_playing = data[3];
-		        user_song = data[4];
+		        user_mode = data[3];
 		    }
 		}
 
@@ -867,54 +866,59 @@ void the_game()
 		//
 		{
 		    uint16_t id = 1;
-		    uint8_t data[] = { ir_broken };
+		    uint8_t data[] = { light_broken };
 		    mcp_send_message(id, data, (uint8_t)sizeof(data));
 		}
 
-		//
-		// Control servo angle
-		//
+		if (user_mode == MODE_PLAY)
 		{
-		    float position = (float)(user_angle-28)/255;
-		    servo_position(position);
+			//
+			// Control servo angle
+			//
+			{
+				float position = (float)(user_angle-28)/255;
+				servo_position(position);
+			}
+
+			//
+			// Control motor position
+			//
+			{
+				const int32_t ENCODER_MAX = 6000;
+				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
+				int32_t actual_position = motor_read_encoder();
+
+				printf("%d %d\n", user_position, (int)actual_position);
+
+				{
+					int32_t band = 1000;
+					int32_t error = (desired_position - actual_position);
+					if (error > band)
+						motor_velocity(100);
+					else if (error < -band)
+						motor_velocity(-100);
+					else
+					{
+						if (error > 0)
+							motor_velocity(30 + (40*error)/band);
+						else
+							motor_velocity(-30 + (40*error)/band);
+					}
+				}
+			}
+
+			//
+			// Control solenoid
+			//
+			{
+				if (user_shoot)
+					solenoid_push();
+				else
+					solenoid_pull();
+			}
 		}
 
-		//
-		// Control motor position
-		//
-		{
-		    const int32_t ENCODER_MAX = 6000;
-		    int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
-		    int32_t actual_position = motor_read_encoder();
-
-		    {
-		        int32_t band = 1000;
-		        int32_t error = (desired_position - actual_position);
-		        if (error > band)
-		            motor_velocity(100);
-		        else if (error < -band)
-		            motor_velocity(-100);
-		        else
-		        {
-		            if (error > 0)
-		                motor_velocity(30 + (40*error)/band);
-		            else
-		                motor_velocity(-30 + (40*error)/band);
-		        }
-		    }
-		}
-
-		//
-		// Control solenoid
-		//
-		{
-			if (user_shoot)
-				solenoid_push();
-			else
-				solenoid_pull();
-		}
-
-		printf("(node 2) %d %d\n", ir_raw, user_shoot);
+		// printf("(node 2) %d %d\n", ir_raw, user_shoot);
 
 		_delay_ms(50);
 	}

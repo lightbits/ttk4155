@@ -6,6 +6,7 @@
 #include "font.h"
 #include "spi.h"
 #include "mcp2515.h"
+#include "../../shared.h"
 
 #define NRF_IMPLEMENTATION
 #define NRF_ATMEGA162_IMPLEMENTATION
@@ -600,11 +601,6 @@ void the_game()
 	oled_flip_screen();
 	#endif
 
-	const uint8_t MODE_PLAY = 0;
-	const uint8_t MODE_MUSIC = 1;
-	const uint8_t MODE_CONTROLS = 2;
-	const uint8_t MODE_MENU = 3;
-	const uint8_t MODE_LOST = 4;
 	uint8_t mode = MODE_MENU;
 
 	#define MAIN_TICK_MS 50
