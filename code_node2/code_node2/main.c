@@ -912,18 +912,6 @@ void the_game()
 				solenoid_push();
 			else
 				solenoid_pull();
-			//static uint8_t is_shooting = 0;
-			//if (user_shoot && !is_shooting)
-			//{
-				//is_shooting = 1;
-				//solenoid_push();
-				//_delay_ms(20);
-				//solenoid_pull();
-			//}
-			//if (!user_shoot)
-			//{
-				//is_shooting = 0;
-			//}
 		}
 
 		printf("(node 2) %d %d\n", ir_raw, user_shoot);
@@ -945,6 +933,6 @@ int main(void)
 	// test_motor();
 	// test_solenoid();
 	// test_motor_with_joystick();
-	test_song();
-	// the_game();
+	// test_song();
+	the_game();
 }
