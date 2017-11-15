@@ -7,6 +7,10 @@
 #include "spi.h"
 #include "mcp2515.h"
 
+#define TIMER_n 1
+#define TIMER_CLOCK_DIVISOR 8
+#include "timer.c"
+
 #define NRF_IMPLEMENTATION
 #define NRF_ATMEGA162_IMPLEMENTATION
 #include "nrf.c"

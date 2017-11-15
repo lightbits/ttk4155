@@ -8,7 +8,7 @@
 #endif
 
 typedef void (*timer_callback_t)(void);
-void timer##TIMER_n_repeat(timer_callback_t f, uint16_t t);
+void timer1_repeat(timer_callback_t f, uint16_t t);
 
 // When called, the function above will repeatedly execute f
 // at intervals of duration t [ms]. The maximum possible duration is given
@@ -36,29 +36,27 @@ void timer##TIMER_n_repeat(timer_callback_t f, uint16_t t);
 // Implementation
 //
 
-#define n TIMER_n
-
-volatile timer_callback_t timer##n_callback = 0;
+volatile timer_callback_t timer1_callback = 0;
 
 // see nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
 // for other interrupt vector names
-ISR(TIMER##n_COMPA_vect) { timer##n_callback(); }
+ISR(TIMER1_COMPA_vect) { timer1_callback(); }
 
-void timer##n_repeat(timer_callback_t callback, uint16_t milliseconds)
+void timer1_repeat(timer_callback_t callback, uint16_t milliseconds)
 {
-    timer##n_callback = callback;
+    timer1_callback = callback;
 
     // Enable Clear Timer on Compare Match (CTC) with OCRnA as TOP
-    clear_bit(TCCR##nB, WGM##n3);
-    set_bit(TCCR##nB, WGM##n2);
-    clear_bit(TCCR##nA, WGM##n1);
-    clear_bit(TCCR##nA, WGM##n0);
+    clear_bit(TCCR1B, WGM13);
+    set_bit(TCCR1B, WGM12);
+    clear_bit(TCCR1A, WGM11);
+    clear_bit(TCCR1A, WGM10);
 
     // Enable global interrupts
     sei();
 
     // Enable interrupt on Compare Match A (since we use OCRnA)
-    set_bit(TIMSK##n, OCIE##nA); // set_bit(TIMSKn, OCIEnA);
+    set_bit(TIMSK, OCIE1A); // set_bit(TIMSKn, OCIEnA);
 
     // Set duration with TOP value
     // (I think we're not rounding badly or overflowing?)
@@ -69,15 +67,15 @@ void timer##n_repeat(timer_callback_t callback, uint16_t milliseconds)
 
     // Start clock
     #if TIMER_CLOCK_DIVISOR==1
-    TCCR##nB = (TCCR##nB & 0b11111000) | 0b001;
+    TCCR1B = (TCCR1B & 0b11111000) | 0b001;
     #elif TIMER_CLOCK_DIVISOR==8
-    TCCR##nB = (TCCR##nB & 0b11111000) | 0b010;
+    TCCR1B = (TCCR1B & 0b11111000) | 0b010;
     #elif TIMER_CLOCK_DIVISOR==64
-    TCCR##nB = (TCCR##nB & 0b11111000) | 0b011;
+    TCCR1B = (TCCR1B & 0b11111000) | 0b011;
     #elif TIMER_CLOCK_DIVISOR==256
-    TCCR##nB = (TCCR##nB & 0b11111000) | 0b100;
+    TCCR1B = (TCCR1B & 0b11111000) | 0b100;
     #elif TIMER_CLOCK_DIVISOR==1024
-    TCCR##nB = (TCCR##nB & 0b11111000) | 0b101;
+    TCCR1B = (TCCR1B & 0b11111000) | 0b101;
     #else
     #error "TIMER_CLOCK_DIVISOR must be one of 1,8,64,256 or 1024"
     #endif
