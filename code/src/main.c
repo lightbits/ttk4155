@@ -485,7 +485,7 @@ void test_nrf()
 	nrf_init();
 	printf("Ok...\n");
 	
-	#define DELAY_MS 5
+	#define DELAY_MS 20
 	#define PRINT_MS 50
 	while (1)
 	{
@@ -499,7 +499,7 @@ void test_nrf()
 			uint8_t button = data[0];
 			uint8_t tilt = data[1];
 			if (can_print)
-			printf("Message: %d %d\n", button, tilt);
+				printf("Message: %d %d\n", button, tilt);
 		}
 		_delay_ms(DELAY_MS);
 	}
@@ -523,7 +523,15 @@ void the_game()
 	oled_init();
     mcp_init();
     mcp_mode_normal();
-	nrf_init(); // todo: remove spi_init from mcp_init
+	
+	{
+		// External memory interferes with nrf
+		// so we disable before we interact with it.
+		ext_mem_disable();
+		spi_init(); // todo: mcp also calls this. is that ok?
+		nrf_init();
+		ext_mem_init();	
+	}
 	
 	printf("Ready!\n");
 	
@@ -553,9 +561,13 @@ void the_game()
 		// Poll wireless remote controller for updates
 		// (we preserve the last update we received)
 		//
-		static uint8_t remote_button = 0;
-		static uint8_t remote_tilt = 127;
-		poll_remote_controller(&remote_button, &remote_tilt);
+		uint8_t remote_button = 0;
+		uint8_t remote_tilt = 127;
+		{
+			ext_mem_disable();
+			poll_remote_controller(&remote_button, &remote_tilt);
+			ext_mem_init();
+		}
 
         //
 		// Check if joystick was moved up, down, left or right once

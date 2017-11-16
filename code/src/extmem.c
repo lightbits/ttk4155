@@ -23,3 +23,8 @@ void ext_mem_init(void)
     set_bit(MCUCR, SRW11);
     clear_bit(EMCUCR, SRW10);
 }
+
+void ext_mem_disable(void)
+{
+	clear_bit(MCUCR, SRE);
+}
