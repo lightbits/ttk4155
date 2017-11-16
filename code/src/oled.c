@@ -99,6 +99,14 @@ void oled_test()
 void oled_set_pixels(uint8_t pixels)
 {
     *oled_data = pixels;
-	//_delay_ms(10);
 }
-
+void oled_clear()
+{
+	oled_xy(0,0);
+	for (int y = 0; y < 8; y++)
+	{
+		oled_xy(0,y);
+		for (int x = 0; x < 128; x++)
+		oled_set_pixels(0x00);
+	}
+}

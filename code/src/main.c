@@ -546,18 +546,6 @@ void test_can_and_joystick()
 	}
 }
 
-// Fill OLED with zeros
-void oled_clear()
-{
-    oled_xy(0,0);
-    for (int y = 0; y < 8; y++)
-    {
-        oled_xy(0,y);
-        for (int x = 0; x < 128; x++)
-            oled_set_pixels(0x00);
-    }
-}
-
 void the_game()
 {
 	#define FLIP_SCREEN 1
@@ -795,9 +783,9 @@ int main (void)
     // test_symbols();
     // test_menu();
     // test_mcp();
-	test_can_loopback();
+	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
 	// test_nrf();
-	// the_game();
+	the_game();
 }
