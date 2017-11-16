@@ -19,14 +19,14 @@ int SPI_init(void) {
 }
 
 
-int SPI_write(char data) {
+uint8_t SPI_write(char data) {
  	// Start transmission
  	SPDR = data;
 
  	// Wait for transmission complete
  	while(!(SPSR & (1<<SPIF)));
 
- 	return 0;
+ 	return SPDR;
 }
 
 
