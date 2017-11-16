@@ -464,10 +464,48 @@ void test_can_and_joystick()
 	}
 }
 
+void poll_remote_controller(uint8_t *button, uint8_t *tilt)
+{
+	static uint8_t data[32];
+	if (nrf_read_payload(data, 32))
+	{
+		*button = data[0];
+		*tilt = data[1];
+	}
+}
+
+void test_nrf()
+{
+	uart_init(9600);
+	printf("Testing nrf...\n");
+	spi_init();
+	nrf_init();
+	printf("Ok...\n");
+	
+	#define DELAY_MS 5
+	#define PRINT_MS 50
+	while (1)
+	{
+		uint8_t can_print = 0;
+		{ static uint32_t t = 0; t += DELAY_MS; if (t > PRINT_MS) { t = 0; can_print = 1; } }
+		
+		static uint8_t data[33];
+		data[32] = 0;
+		if (nrf_read_payload(data, 32))
+		{
+			uint8_t button = data[0];
+			uint8_t tilt = data[1];
+			if (can_print)
+			printf("Message: %d %d\n", button, tilt);
+		}
+		_delay_ms(DELAY_MS);
+	}
+	#undef PRINT_MS
+	#undef DELAY_MS
+}
+
 void the_game()
 {
-	#define FLIP_SCREEN 1
-
     uart_init(9600);
     printf("external memory...\n");
 	ext_mem_init();
@@ -476,16 +514,21 @@ void the_game()
     printf("mcp...\n");
     mcp_init();
     mcp_mode_normal();
+	printf("nrf...\n");
+	nrf_init(); // todo: remove spi_init from mcp_init
     printf("ok!\n");
-
-	#if FLIP_SCREEN
-	oled_flip_screen();
-	#endif
+	
+	const uint8_t CONTROLLER_P1000 = 0;
+	const uint8_t CONTROLLER_REMOTE = 1;
+	#define MAIN_TICK_MS 50
 
 	uint8_t mode = MODE_MENU;
-
-	#define MAIN_TICK_MS 50
+	uint8_t flip_screen = 1;
+	uint8_t controller = CONTROLLER_P1000;
 	uint32_t time_played = 0;
+	
+	if (flip_screen)
+		oled_flip_screen();
 
 	while (1)
 	{
@@ -496,6 +539,14 @@ void the_game()
 		uint8_t joy_y = adc_read(1);
 		uint8_t button = !(adc_read(2) > 128);
 		uint8_t slider = adc_read(3);
+		
+		//
+		// Poll wireless remote controller for updates
+		// (we preserve the last update we received)
+		//
+		static uint8_t remote_button = 0;
+		static uint8_t remote_tilt = 127;
+		poll_remote_controller(&remote_button, &remote_tilt);
 
         //
 		// Check if joystick was moved up, down, left or right once
@@ -507,17 +558,21 @@ void the_game()
 			static uint8_t joy_was_down = 0;
 			static uint8_t joy_was_right = 0;
 			static uint8_t joy_was_left = 0;
-			#if FLIP_SCREEN
-			uint8_t joy_is_up = (joy_y > 200);
-			uint8_t joy_is_down = (joy_y < 100);
-			uint8_t joy_is_right = (joy_x > 200);
-			uint8_t joy_is_left = (joy_x < 100);
-			#else
-			uint8_t joy_is_up = (joy_y < 100);
-			uint8_t joy_is_down = (joy_y > 200);
-			uint8_t joy_is_right = (joy_x < 100);
-			uint8_t joy_is_left = (joy_x > 200);
-			#endif
+			uint8_t joy_is_up,joy_is_down,joy_is_right,joy_is_left;
+			if (flip_screen)
+			{
+				joy_is_up = (joy_y > 200);
+				joy_is_down = (joy_y < 100);
+				joy_is_right = (joy_x > 200);
+				joy_is_left = (joy_x < 100);	
+			}
+			else
+			{
+				joy_is_up = (joy_y < 100);
+				joy_is_down = (joy_y > 200);
+				joy_is_right = (joy_x < 100);
+				joy_is_left = (joy_x > 200);	
+			}
 			joy_up = !joy_was_up && joy_is_up;
 			joy_down = !joy_was_down && joy_is_down;
 			joy_left = !joy_was_left && joy_is_left;
@@ -594,18 +649,17 @@ void the_game()
 		}
 		else if (mode == MODE_CONTROLS)
 		{
-            static uint8_t selected = 0;
             oled_clear();
 			oled_xy(0,0); oled_print("Up/Down: Select");
             oled_xy(0,1); oled_print("Left: Go back");
             oled_xy(0,3);
             oled_print("Ctrl: ");
-            if (selected == 0)
+            if (controller == CONTROLLER_P1000)
                 oled_print("<P1000>");
-            if (selected == 1)
+            if (controller == CONTROLLER_REMOTE)
                 oled_print("<Remote>");
-            if (joy_up) selected = 0;
-            if (joy_down) selected = 1;
+            if (joy_up) controller = CONTROLLER_P1000;
+            if (joy_down) controller = CONTROLLER_REMOTE;
 			if (joy_left)
 				mode = MODE_MENU;
 		}
@@ -644,15 +698,22 @@ void the_game()
 		// Send controller input to node 2 over CAN
 		//
 		{
-			// todo: make common format between hand-controller and P1000
-			// todo: add song selection
 			uint8_t angle = 0;
-			uint8_t shoot = 0;
 			uint8_t position = 0;
+			uint8_t shoot = 0;
 
-			angle = joy_x;
-			shoot = button;
-			position = slider;
+			if (controller == CONTROLLER_P1000)
+			{
+				angle = joy_x;
+				position = slider;	
+				shoot = button;
+			}
+			else if (controller == CONTROLLER_REMOTE)
+			{
+				angle = remote_tilt;
+				position = 0;
+				shoot = remote_button;
+			}
 
 			uint8_t id = 0;
 			uint8_t data[] = { angle, position, shoot, mode };
@@ -661,36 +722,6 @@ void the_game()
 
 		_delay_ms(MAIN_TICK_MS);
 	}
-}
-
-void test_nrf()
-{
-	uart_init(9600);
-	printf("Testing nrf...\n");
-	spi_init();
-	nrf_init();
-	printf("Ok...\n");
-	
-	#define DELAY_MS 5
-	#define PRINT_MS 50
-	while (1)
-	{	
-		uint8_t can_print = 0;
-		{ static uint32_t t = 0; t += DELAY_MS; if (t > PRINT_MS) { t = 0; can_print = 1; } }
-		
-		static uint8_t data[33];
-		data[32] = 0;
-		if (nrf_read_payload(data, 32))
-		{
-			uint8_t button = data[0];
-			uint8_t tilt = data[1];
-			if (can_print)
-				printf("Message: %d %d\n", button, tilt);
-		}
-		_delay_ms(DELAY_MS);
-	}
-	#undef PRINT_MS
-	#undef DELAY_MS
 }
 
 int main (void)
@@ -708,6 +739,6 @@ int main (void)
 	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
-	test_nrf();
-	// the_game();
+	// test_nrf();
+	the_game();
 }
