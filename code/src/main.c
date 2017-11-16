@@ -666,19 +666,31 @@ void the_game()
 void test_nrf()
 {
 	uart_init(9600);
-	
+	printf("Testing nrf...\n");
 	spi_init();
 	nrf_init();
+	printf("Ok...\n");
 	
-	printf("testing nrf...\n");
-
+	#define DELAY_MS 5
+	#define PRINT_MS 50
 	while (1)
-	{
-		uint8_t status = nrf_read_register(0x0a);
-		// uint8_t status = nrf_read_status();
-		printf("%x\n", status);
-		_delay_ms(50);
+	{	
+		uint8_t can_print = 0;
+		{ static uint32_t t = 0; t += DELAY_MS; if (t > PRINT_MS) { t = 0; can_print = 1; } }
+		
+		static uint8_t data[33];
+		data[32] = 0;
+		if (nrf_read_payload(data, 32))
+		{
+			uint8_t button = data[0];
+			uint8_t tilt = data[1];
+			if (can_print)
+				printf("Message: %d %d\n", button, tilt);
+		}
+		_delay_ms(DELAY_MS);
 	}
+	#undef PRINT_MS
+	#undef DELAY_MS
 }
 
 int main (void)
@@ -696,6 +708,6 @@ int main (void)
 	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
-	// test_nrf();
-	the_game();
+	test_nrf();
+	// the_game();
 }
