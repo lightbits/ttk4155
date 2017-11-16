@@ -546,31 +546,6 @@ void test_can_and_joystick()
 	}
 }
 
-/*
-NODE 1
-	read joystick, button slider (adc)
-	read ball break light (can)
-	send controls to node 2 (can)
-	play song
-	if (main_menu)
-	if (audio)
-	if (highscore)
-	if (play_game)
-	if (lost_game)
-	draw screen
-	menu
-	score (time played)
-
-NODE 2
-	read controls (can)
-	send ball break light (can)
-	set servo position (pwm duty cycle)
-	set motor velocity
-	activate solenoid
-	read encoder
-	read ir photodiode
-*/
-
 // Fill OLED with zeros
 void oled_clear()
 {
@@ -786,53 +761,43 @@ void test_nrf()
 {
 	uart_init(9600);
 	ext_mem_init();
+	
+	SPI_init();
+	nrf_init();
 
 	oled_init();
 	oled_flip_screen();
-
 	oled_clear();
-	oled_xy(0,0);
-	oled_print("woo");
 
-	SPI_init();
-
-	nrf_init();
-	uint8_t status = nrf_read_status();
-
-	oled_xy(0,1);
-	if (status > 0)
-		oled_print("it works");
-	else
-		oled_print("fuck");
+	while (1)
+	{
+		//uint8_t status = nrf_read_register(0x0a);
+		uint8_t status = nrf_read_status();
+		{
+			char buffer[16];
+			sprintf(buffer, "%x", status);
+			oled_xy(0,0);
+			oled_print(buffer);
+		}
+		_delay_ms(50);
+	}
 }
 
 int main (void)
 {
     // uart_test();
-
     // test_latch();
-
     // test_sram();
-
     // test_gal();
-
     // test_adc();
-
     // oled_test_checkerboard();
     // test_smiley();
     // test_symbols();
-
     // test_menu();
-
     // test_mcp();
-
-	// test_can_loopback();
-
+	test_can_loopback();
 	// test_can_between_nodes();
-
 	// test_can_and_joystick();
-
-	test_nrf();
-
+	// test_nrf();
 	// the_game();
 }
