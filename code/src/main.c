@@ -674,8 +674,8 @@ void test_nrf()
 
 	while (1)
 	{
-		//uint8_t status = nrf_read_register(0x0a);
-		uint8_t status = nrf_read_status();
+		uint8_t status = nrf_read_register(0x0a);
+		// uint8_t status = nrf_read_status();
 		printf("%x\n", status);
 		_delay_ms(50);
 	}
@@ -696,6 +696,6 @@ int main (void)
 	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
-	test_nrf();
-	// the_game();
+	// test_nrf();
+	the_game();
 }
