@@ -4,7 +4,7 @@
 
 void mcp_init(void) {
 
-    SPI_init();
+    spi_init();
     mcp_reset();
 
     //
@@ -49,15 +49,15 @@ uint8_t mcp_read(uint8_t address) {
     uint8_t data;
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Read instruction
-    SPI_write(MCP_READ);
-    SPI_write(address);
-    data = SPI_read();
+    spi_write(MCP_READ);
+    spi_write(address);
+    data = spi_read();
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return data;
 }
@@ -65,30 +65,30 @@ uint8_t mcp_read(uint8_t address) {
 void mcp_read_many(uint8_t address, uint8_t *data, uint8_t count) {
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Read instruction
-    SPI_write(MCP_READ);
-    SPI_write(address);
+    spi_write(MCP_READ);
+    spi_write(address);
     for (uint8_t i = 0; i < count; i++)
-        data[i] = SPI_read();
+        data[i] = spi_read();
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 }
 
 int mcp_write(uint8_t address, uint8_t data) {
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Byte write instruction
-    SPI_write(MCP_WRITE);
-    SPI_write(address);
-    SPI_write(data);
+    spi_write(MCP_WRITE);
+    spi_write(address);
+    spi_write(data);
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return 0;
 }
@@ -96,29 +96,29 @@ int mcp_write(uint8_t address, uint8_t data) {
 int mcp_write_many(uint8_t address, uint8_t *data, uint8_t count) {
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Byte write instruction
-    SPI_write(MCP_WRITE);
-    SPI_write(address);
+    spi_write(MCP_WRITE);
+    spi_write(address);
     for (uint8_t i = 0; i < count; i++)
-        SPI_write(data[i]);
+        spi_write(data[i]);
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return 0;
 }
 
 int mcp_request_to_send(uint8_t bitflag) {
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Request-to-send instruction
-    SPI_write(MCP_RTS | (bitflag & 7));
+    spi_write(MCP_RTS | (bitflag & 7));
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return 0;
 }
@@ -126,16 +126,16 @@ int mcp_request_to_send(uint8_t bitflag) {
 int mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Bit modify instruction
-    SPI_write(MCP_BIT_MODIFY);
-    SPI_write(address);
-    SPI_write(mask);
-    SPI_write(data);
+    spi_write(MCP_BIT_MODIFY);
+    spi_write(address);
+    spi_write(mask);
+    spi_write(data);
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return 0;
 }
@@ -143,23 +143,23 @@ int mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
 int mcp_reset(void) {
 
     // Activate slave select
-    SPI_slave_select();
+    spi_slave_select();
 
     // Reset instruction
-    SPI_write(MCP_RESET);
+    spi_write(MCP_RESET);
 
     // Deactivate slave select
-    SPI_slave_deselect();
+    spi_slave_deselect();
 
     return 0;
 }
 
 mcp_status mcp_get_status()
 {
-    SPI_slave_select();
-    SPI_write(MCP_READ_STATUS);
-    uint8_t data = SPI_read();
-    SPI_slave_deselect();
+    spi_slave_select();
+    spi_write(MCP_READ_STATUS);
+    uint8_t data = spi_read();
+    spi_slave_deselect();
 
     // See page 69, figure 12-8 for a description of the return data
     mcp_status status;

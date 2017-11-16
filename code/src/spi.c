@@ -7,7 +7,7 @@
 #define SPI_SCK PB7
 
 
-int SPI_init(void) {
+int spi_init(void) {
 	// Set MOSI, SCK and SS output, all others input
 	DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);
 	
@@ -19,7 +19,7 @@ int SPI_init(void) {
 }
 
 
-uint8_t SPI_write(char data) {
+uint8_t spi_write(char data) {
  	// Start transmission
  	SPDR = data;
 
@@ -30,7 +30,7 @@ uint8_t SPI_write(char data) {
 }
 
 
-uint8_t SPI_read(void) {
+uint8_t spi_read(void) {
  	// Wait reception complete
 	 SPDR = 0xDC;
  	while(!(SPSR & (1<<SPIF)));
@@ -40,13 +40,13 @@ uint8_t SPI_read(void) {
 }
 
 
-void SPI_slave_select(void) {
+void spi_slave_select(void) {
  	// Set !SS to 0 for activation of slave selection
  	clear_bit(PORTB, SPI_SS);
 }
 
 
-void SPI_slave_deselect(void) {
+void spi_slave_deselect(void) {
 	// Set !SS to 1 to deactivation of slave selection
  	set_bit(PORTB, SPI_SS);
 }

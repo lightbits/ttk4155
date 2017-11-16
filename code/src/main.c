@@ -668,7 +668,7 @@ void test_nrf()
 	uart_init(9600);
 	ext_mem_init();
 	
-	SPI_init();
+	spi_init();
 	nrf_init();
 
 	oled_init();
@@ -701,9 +701,9 @@ int main (void)
     // test_symbols();
     // test_menu();
     // test_mcp();
-	// test_can_loopback();
+	test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
 	// test_nrf();
-	the_game();
+	// the_game();
 }

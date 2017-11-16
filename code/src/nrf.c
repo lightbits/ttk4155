@@ -51,13 +51,13 @@ void nrf_pin_enable()
 // and connection to SPI interface (MOSI/MISO/SCK).
 // Also assumes you level-shift MISO from 3.3v to 
 // 5v using a single (inverting) transistor. This
-// is why I invert the SPI_write return value below.
+// is why I invert the spi_write return value below.
 //
 #ifdef NRF_ATMEGA162_IMPLEMENTATION
 #define NRF_PORT    B
 #define NRF_CE_PIN  PB0
 #define NRF_CSN_PIN PB1
-uint8_t spi_send(uint8_t data) { return ~SPI_write(data); }
+uint8_t spi_send(uint8_t data) { return ~spi_write(data); }
 void nrf_spi_select() { clear_bit(PORTB, NRF_CSN_PIN); }
 void nrf_spi_deselect() { set_bit(PORTB, NRF_CSN_PIN); }
 void nrf_chip_enable() { set_bit(PORTB, NRF_CE_PIN); }
