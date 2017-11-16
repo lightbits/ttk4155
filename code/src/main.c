@@ -3,7 +3,6 @@
 #include "adc.h"
 #include "extmem.h"
 #include "oled.h"
-#include "font.h"
 #include "spi.h"
 #include "mcp2515.h"
 #include "../../shared.h"
@@ -315,23 +314,6 @@ void oled_test_symbols()
             }
         }
         _delay_ms(500);
-    }
-}
-
-void oled_write_char(char c)
-{
-    for (int i = 0; i < 5; i++)
-        oled_set_pixels(pgm_read_byte(&font5[c - ' '][i]));
-}
-
-void oled_print(const char *str)
-{
-    const char *c = str;
-    while (*c)
-    {
-        oled_write_char(*c);
-        oled_set_pixels(0);
-        c++;
     }
 }
 

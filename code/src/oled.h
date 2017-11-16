@@ -16,4 +16,6 @@ void oled_contrast(uint8_t contrast); // range: 0 to 255
 void oled_set_pixels(uint8_t pixels);
 void oled_clear();
 void oled_test();
+void oled_write_char(char c);
+void oled_print(const char *str);
 #endif

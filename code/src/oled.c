@@ -1,4 +1,5 @@
 #include "oled.h"
+#include "font.h"
 volatile uint8_t *oled_command = (uint8_t*)OLED_COMMAND_MEMORY_START;
 volatile uint8_t *oled_data = (uint8_t*)OLED_DATA_MEMORY_START;
 
@@ -108,5 +109,21 @@ void oled_clear()
 		oled_xy(0,y);
 		for (int x = 0; x < 128; x++)
 		oled_set_pixels(0x00);
+	}
+}
+void oled_write_char(char c)
+{
+	for (int i = 0; i < 5; i++)
+	oled_set_pixels(pgm_read_byte(&font5[c - ' '][i]));
+}
+
+void oled_print(const char *str)
+{
+	const char *c = str;
+	while (*c)
+	{
+		oled_write_char(*c);
+		oled_set_pixels(0);
+		c++;
 	}
 }
