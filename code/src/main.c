@@ -11,6 +11,8 @@
 #define NRF_ATMEGA162_IMPLEMENTATION
 #include "nrf.c"
 
+#if 0
+
 // This will repeatedly set pin 1 of port D high and low
 void test_clock(void)
 {
@@ -463,6 +465,7 @@ void test_can_and_joystick()
 		_delay_ms(10);
 	}
 }
+#endif
 
 void poll_remote_controller(uint8_t *button, uint8_t *tilt)
 {
@@ -507,16 +510,15 @@ void test_nrf()
 void the_game()
 {
     uart_init(9600);
-    printf("external memory...\n");
+	printf("The game...\n");
+	
 	ext_mem_init();
-    printf("oled...\n");
 	oled_init();
-    printf("mcp...\n");
     mcp_init();
     mcp_mode_normal();
-	printf("nrf...\n");
 	nrf_init(); // todo: remove spi_init from mcp_init
-    printf("ok!\n");
+	
+	printf("Ready!\n");
 	
 	const uint8_t CONTROLLER_P1000 = 0;
 	const uint8_t CONTROLLER_REMOTE = 1;
@@ -666,9 +668,7 @@ void the_game()
 		else if (mode == MODE_PLAY)
 		{
             oled_clear();
-			oled_xy(0,0);
-			oled_print("You are playing!");
-            oled_xy(0,3);
+            oled_xy(0,0);
             oled_print("time: ");
 			{
 				static char str[16];
