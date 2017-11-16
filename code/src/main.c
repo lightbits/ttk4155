@@ -168,7 +168,7 @@ void test_adc()
     }
 }
 
-void oled_test_checkerboard()
+void test_oled_checkerboard()
 {
     uart_init(9600);
     ext_mem_init();
@@ -205,71 +205,7 @@ void oled_test_checkerboard()
     }
 }
 
-void test_smiley()
-{
-    ext_mem_init();
-    oled_init();
-
-    while (1)
-    {
-        oled_set_page(0);
-        oled_set_column(0);
-
-        for (int y = 0; y < 8; y++)
-        {
-            oled_set_page(y);
-            oled_set_column(0);
-            for (int x = 0; x < 128; x++){ // for each column
-                // oled_set_pixels(0xff);
-                if (y==3 && x > 56 && x < (56+8)){
-                    oled_set_pixels(0xff);
-                }
-                else if (y == 4)
-                    oled_set_pixels(0xff);
-                //else if (y==1 && x>80 && x<88){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==3 && x>40 && x<48){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==4 && x>40 && x<48){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==5 && x>48 && x<56){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==5 && x>56 && x<64){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==6 && x>64 && x<72){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==6 && x>72 && x<80){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==6 && x>80 && x<88){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==5 && x>88 && x<96){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==4 && x>96 && x<104){
-                    //oled_set_pixels(0xff);
-                //}
-                //else if (y==3 && x>96 && x<104){
-                    //oled_set_pixels(0xff);
-                //}
-                else {
-                    oled_set_pixels(0);
-                }
-
-            }
-        }
-
-    }
-}
-
-void oled_test_symbols()
+void test_oled_symbols()
 {
     // The following static tables define these characters.
     // They are stored page by page (going to the right).
@@ -760,7 +696,7 @@ int main (void)
     // test_sram();
     // test_gal();
     // test_adc();
-    // oled_test_checkerboard();
+    // test_oled_checkerboard();
     // test_smiley();
     // test_symbols();
     // test_menu();
