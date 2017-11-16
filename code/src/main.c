@@ -517,7 +517,7 @@ void oled_print_u16(uint16_t x)
 void the_game()
 {
     uart_init(9600);
-	printf("The game...\n");
+	printf("The game...");
 	
 	ext_mem_init();
 	oled_init();
@@ -561,8 +561,8 @@ void the_game()
 		// Poll wireless remote controller for updates
 		// (we preserve the last update we received)
 		//
-		uint8_t remote_button = 0;
-		uint8_t remote_tilt = 127;
+		static uint8_t remote_button = 0;
+		static uint8_t remote_tilt = 127;
 		{
 			ext_mem_disable();
 			poll_remote_controller(&remote_button, &remote_tilt);
