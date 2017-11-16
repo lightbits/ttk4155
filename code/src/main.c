@@ -666,25 +666,17 @@ void the_game()
 void test_nrf()
 {
 	uart_init(9600);
-	ext_mem_init();
 	
 	spi_init();
 	nrf_init();
-
-	oled_init();
-	oled_flip_screen();
-	oled_clear();
+	
+	printf("testing nrf...\n");
 
 	while (1)
 	{
 		//uint8_t status = nrf_read_register(0x0a);
 		uint8_t status = nrf_read_status();
-		{
-			char buffer[16];
-			sprintf(buffer, "%x", status);
-			oled_xy(0,0);
-			oled_print(buffer);
-		}
+		printf("%x\n", status);
 		_delay_ms(50);
 	}
 }
@@ -701,9 +693,9 @@ int main (void)
     // test_symbols();
     // test_menu();
     // test_mcp();
-	test_can_loopback();
+	// test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
-	// test_nrf();
+	test_nrf();
 	// the_game();
 }

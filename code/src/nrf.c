@@ -14,6 +14,7 @@ void nrf_spi_deselect();
 void nrf_chip_enable();
 void nrf_chip_disable();
 void nrf_pin_enable();
+uint8_t nrf_spi_send(uint8_t data);
 // Hardware-independent interface
 void    nrf_init();
 void    nrf_transmit(uint8_t *data, uint8_t count);
@@ -34,6 +35,7 @@ uint8_t nrf_read_register(uint8_t register_address);
 #define NRF_CSN_PIN  3
 #define NRF_CE_PORT  C
 #define NRF_CE_PIN   2
+uint8_t nrf_spi_send(uint8_t data) { spi_send(data); }
 void nrf_spi_select() { pin_low(NRF_CSN_PORT, NRF_CSN_PIN); }
 void nrf_spi_deselect() { pin_high(NRF_CSN_PORT, NRF_CSN_PIN); }
 void nrf_chip_enable() { pin_high(NRF_CE_PORT, NRF_CE_PIN); }
@@ -54,10 +56,9 @@ void nrf_pin_enable()
 // is why I invert the spi_write return value below.
 //
 #ifdef NRF_ATMEGA162_IMPLEMENTATION
-#define NRF_PORT    B
 #define NRF_CE_PIN  PB0
 #define NRF_CSN_PIN PB1
-uint8_t spi_send(uint8_t data) { return ~spi_write(data); }
+uint8_t nrf_spi_send(uint8_t data) { return ~spi_write(data); }
 void nrf_spi_select() { clear_bit(PORTB, NRF_CSN_PIN); }
 void nrf_spi_deselect() { set_bit(PORTB, NRF_CSN_PIN); }
 void nrf_chip_enable() { set_bit(PORTB, NRF_CE_PIN); }
@@ -79,7 +80,7 @@ SPI spi(p5, p6, p7); // mosi, miso, sclk
 DigitalOut cs(p8);
 DigitalOut ce(p9);
 DigitalIn irq(p10);
-uint8_t spi_send(uint8_t data) { return spi.write(data); }
+uint8_t nrf_spi_send(uint8_t data) { return spi.write(data); }
 void nrf_spi_select() { cs = 0; }
 void nrf_spi_deselect() { cs = 1; }
 void nrf_chip_enable() { ce = 1; }
@@ -164,7 +165,7 @@ nrf_status_t nrf_decode_status()
 uint8_t nrf_read_status()
 {
     nrf_spi_select();
-    uint8_t status = spi_send(0b11111111);
+    uint8_t status = nrf_spi_send(0b11111111);
     nrf_spi_deselect();
     return status;
 }
@@ -172,8 +173,8 @@ uint8_t nrf_read_status()
 uint8_t nrf_read_register(uint8_t register_address)
 {
     nrf_spi_select();
-    spi_send(0b00000000 | (register_address & 0b00011111));
-    uint8_t data = spi_send(0b11111111);
+    nrf_spi_send(0b00000000 | (register_address & 0b00011111));
+    uint8_t data = nrf_spi_send(0b11111111);
     nrf_spi_deselect();
     return data;
 }
@@ -181,15 +182,15 @@ uint8_t nrf_read_register(uint8_t register_address)
 void nrf_write_register(uint8_t register_address, uint8_t data)
 {
     nrf_spi_select();
-    spi_send(0b00100000 | (register_address & 0b00011111));
-    spi_send(data);
+    nrf_spi_send(0b00100000 | (register_address & 0b00011111));
+    nrf_spi_send(data);
     nrf_spi_deselect();
 }
 
 uint8_t nrf_read_payload(uint8_t *data, uint8_t count)
 {
     nrf_spi_select();
-    uint8_t status = spi_send(0b01100001);
+    uint8_t status = nrf_spi_send(0b01100001);
     uint8_t empty = ((status >> NRF_RX_PIPE_NO) & 7) == 0b111;
     if (empty)
     {
@@ -200,12 +201,12 @@ uint8_t nrf_read_payload(uint8_t *data, uint8_t count)
     {
         uint8_t i = 0;
         for (i = 0; i < count && i < NRF_PAYLOAD_LENGTH; i++)
-            data[i] = spi_send(0b11111111);
+            data[i] = nrf_spi_send(0b11111111);
 
         // todo: I think we may have to clock out all the bytes
         // for the payload to be deleted from the FIFO?
         for (; i < NRF_PAYLOAD_LENGTH; i++)
-            spi_send(0b11111111);
+            nrf_spi_send(0b11111111);
 
         // clear flag by writing '1'
         nrf_write_register(NRF_STATUS, 1 << NRF_RX_DATA_READY);
@@ -217,17 +218,17 @@ uint8_t nrf_read_payload(uint8_t *data, uint8_t count)
 void nrf_write_payload(uint8_t *data, uint8_t count)
 {
     nrf_spi_select();
-    spi_send(0b10100000);
+    nrf_spi_send(0b10100000);
 
     uint8_t i = 0;
     for (i = 0; i < count && i < NRF_PAYLOAD_LENGTH; i++)
-        spi_send(data[i]);
+        nrf_spi_send(data[i]);
 
     // Always write 32 bytes because we hardcode the static payload length
     // to be 32 bytes, and the number of bytes we clock in must match the
     // RX_PW_Px register set on the receiver (which we set in nrf_init).
     for (; i < NRF_PAYLOAD_LENGTH; i++)
-        spi_send(0);
+        nrf_spi_send(0);
 
     nrf_spi_deselect();
 }
