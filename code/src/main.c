@@ -507,6 +507,13 @@ void test_nrf()
 	#undef DELAY_MS
 }
 
+void oled_print_u16(uint16_t x)
+{
+	char buffer[6];
+	sprintf(buffer, "%u", x);
+	oled_print(buffer);
+}
+
 void the_game()
 {
     uart_init(9600);
@@ -669,13 +676,24 @@ void the_game()
 		{
             oled_clear();
             oled_xy(0,0);
-            oled_print("time: ");
-			{
-				static char str[16];
-				sprintf(str, "%lu", time_played/1000);
-				oled_print(str);
-				oled_print("s");
-			}
+            oled_print("Time: ");
+			oled_print_u16((uint16_t)time_played/1000);
+			oled_print("s");
+			
+			oled_xy(0,1);
+			oled_print("REMOTE: ");
+			oled_print_u16(remote_button);
+			oled_print(" ");
+			oled_print_u16(remote_tilt);
+			
+			oled_xy(0,2);
+			oled_print("P1000: ");
+			oled_print_u16(button);
+			oled_print(" ");
+			oled_print_u16(joy_x);
+			oled_print(" ");
+			oled_print_u16(slider);
+			
 			time_played += MAIN_TICK_MS;
 
 			if (light_blocked)
