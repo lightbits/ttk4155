@@ -27,7 +27,7 @@ void the_game()
 		// External memory interferes with nrf
 		// so we disable before we interact with it.
 		ext_mem_disable();
-		spi_init(); // todo: mcp also calls this. is that ok?
+		spi_init();
 		nrf_init();
 		ext_mem_init();
 	}
