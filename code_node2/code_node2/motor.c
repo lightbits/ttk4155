@@ -43,7 +43,7 @@ int16_t motor_read_encoder()
 void motor_velocity(int16_t velocity)
 {
     set_bit(MOTOR_PORT, MOTOR_PIN_EN);
-    uint8_t speed;
+    uint8_t speed = 0;
     if (velocity < 0)
     {
         set_bit(MOTOR_PORT, MOTOR_PIN_DIR);
