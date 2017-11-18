@@ -740,7 +740,7 @@ void the_game()
 			else if (controller == CONTROLLER_REMOTE)
 			{
 				msg.angle = remote_tilt;
-				msg.position = 0;
+				msg.position = 127;
 				msg.shoot = remote_button;
 			}
 
