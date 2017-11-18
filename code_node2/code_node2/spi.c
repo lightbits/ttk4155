@@ -9,7 +9,7 @@
 #define MCP2510_SS PB7
 void spi_init()
 {
-    DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS) | (1<<MCP2510_SS);
+    DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);
     SPCR = (1<<MSTR) | (1<<SPR0);
     SPCR |= (1<<SPE); // For some reason we need to |= this in after the above.
 }
