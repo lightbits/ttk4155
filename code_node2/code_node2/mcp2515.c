@@ -14,7 +14,6 @@ uint8_t mcp_spi_read() { return spi_read(); }
 //
 // SPI-independent implementation
 //
-
 void mcp_init(void) {
 
     spi_init();

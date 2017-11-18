@@ -4,6 +4,15 @@
 #include "mcp2515_registers.h"
 
 //
+// The MCP2515 needs a SPI interface with Phase/Polarity 0,0 or 1,1
+// Maximum data rate 10 MHz. You define these functions.
+//
+void mcp_slave_select(); // Set CS low
+void mcp_slave_deselect(); // Set CS high
+uint8_t mcp_spi_write(uint8_t x);
+uint8_t mcp_spi_read();
+
+//
 // CAN messaging interface
 //
 // Note: sending messages will use the 0'th transmission buffer
@@ -49,7 +58,7 @@ typedef struct
 mcp_status mcp_get_status();
 
 // Return detailed status of a specific transmission buffer (0, 1 or 2)
-typedef struct 
+typedef struct
 {
     int aborted; // message aborted
     int lost;    // message lost arbitration
