@@ -1,22 +1,8 @@
-#include <avr/io.h>
 #include "mcp2515.h"
 
-//
-// ATmega2560-specific implementation
-//
-#include "spi.h"
-#define MCP_SS PB7
-void mcp_slave_select() { set_bit(DDRB, MCP_SS); clear_bit(PORTB, MCP_SS); }
-void mcp_slave_deselect() { set_bit(DDRB, MCP_SS); set_bit(PORTB, MCP_SS); }
-uint8_t mcp_spi_write(uint8_t x) { return spi_write(x); }
-uint8_t mcp_spi_read() { return spi_read(); }
-
-//
-// SPI-independent implementation
-//
 void mcp_init(void) {
 
-    spi_init();
+    mcp_spi_init();
     mcp_reset();
 
     //

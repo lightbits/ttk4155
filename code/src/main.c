@@ -3,8 +3,8 @@
 #include "adc.h"
 #include "extmem.h"
 #include "oled.h"
-#include "spi.h"
-#include "mcp2515.h"
+#include "../../spi.h"
+#include "../../mcp2515.h"
 #include "../../shared.h"
 
 #define NRF_IMPLEMENTATION
@@ -484,14 +484,14 @@ void test_nrf()
 	spi_init();
 	nrf_init();
 	printf("Ok...\n");
-	
+
 	#define DELAY_MS 20
 	#define PRINT_MS 50
 	while (1)
 	{
 		uint8_t can_print = 0;
 		{ static uint32_t t = 0; t += DELAY_MS; if (t > PRINT_MS) { t = 0; can_print = 1; } }
-		
+
 		static uint8_t data[33];
 		data[32] = 0;
 		if (nrf_read_payload(data, 32))
@@ -518,23 +518,23 @@ void the_game()
 {
     uart_init(9600);
 	printf("The game...");
-	
+
 	ext_mem_init();
 	oled_init();
     mcp_init();
     mcp_mode_normal();
-	
+
 	{
 		// External memory interferes with nrf
 		// so we disable before we interact with it.
 		ext_mem_disable();
 		spi_init(); // todo: mcp also calls this. is that ok?
 		nrf_init();
-		ext_mem_init();	
+		ext_mem_init();
 	}
-	
+
 	printf("Ready!\n");
-	
+
 	const uint8_t CONTROLLER_P1000 = 0;
 	const uint8_t CONTROLLER_REMOTE = 1;
 	#define MAIN_TICK_MS 50
@@ -543,7 +543,7 @@ void the_game()
 	uint8_t flip_screen = 1;
 	uint8_t controller = CONTROLLER_P1000;
 	uint32_t time_played = 0;
-	
+
 	if (flip_screen)
 		oled_flip_screen();
 
@@ -556,7 +556,7 @@ void the_game()
 		uint8_t joy_y = adc_read(1);
 		uint8_t button = !(adc_read(2) > 128);
 		uint8_t slider = adc_read(3);
-		
+
 		//
 		// Poll wireless remote controller for updates
 		// (we preserve the last update we received)
@@ -585,14 +585,14 @@ void the_game()
 				joy_is_up = (joy_y > 200);
 				joy_is_down = (joy_y < 100);
 				joy_is_right = (joy_x > 200);
-				joy_is_left = (joy_x < 100);	
+				joy_is_left = (joy_x < 100);
 			}
 			else
 			{
 				joy_is_up = (joy_y < 100);
 				joy_is_down = (joy_y > 200);
 				joy_is_right = (joy_x < 100);
-				joy_is_left = (joy_x > 200);	
+				joy_is_left = (joy_x > 200);
 			}
 			joy_up = !joy_was_up && joy_is_up;
 			joy_down = !joy_was_down && joy_is_down;
@@ -691,13 +691,13 @@ void the_game()
             oled_print("Time: ");
 			oled_print_u16((uint16_t)time_played/1000);
 			oled_print("s");
-			
+
 			oled_xy(0,1);
 			oled_print("REMOTE: ");
 			oled_print_u16(remote_button);
 			oled_print(" ");
 			oled_print_u16(remote_tilt);
-			
+
 			oled_xy(0,2);
 			oled_print("P1000: ");
 			oled_print_u16(button);
@@ -705,7 +705,7 @@ void the_game()
 			oled_print_u16(joy_x);
 			oled_print(" ");
 			oled_print_u16(slider);
-			
+
 			time_played += MAIN_TICK_MS;
 
 			if (light_blocked)
@@ -735,7 +735,7 @@ void the_game()
 			if (controller == CONTROLLER_P1000)
 			{
 				angle = joy_x;
-				position = slider;	
+				position = slider;
 				shoot = button;
 			}
 			else if (controller == CONTROLLER_REMOTE)

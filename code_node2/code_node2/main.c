@@ -1,20 +1,20 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "../../spi.h"
+#include "../../mcp2515.h"
+#include "../../shared.h"
 #include "uart.h"
-#include "spi.h"
-#include "mcp2515.h"
 #include "pwm.h"
 #include "motor.h"
 #include "solenoid.h"
 #include "servo.h"
-#include "../../shared.h"
 #include "music.h"
 #include "music.c"
 
 void test_mcp()
 {
 	uart_init(9600);
-	SPI_init();
+	mcp_spi_init();
 	mcp_reset();
 	printf("Testing mcp...\n");
 	while (1)
@@ -334,13 +334,13 @@ void test_song()
 		multiplier_length = LOST_MULTIPLIER_LENGTH;
 	}
 	#endif
-	
+
 	int counter = 0;
 	int note = 0;
 
 	#define MAIN_TICK_MS 5
 	while(1){
-		
+
 		if (counter <= MAIN_TICK_MS) {
 			wave_frequency(frequency[note]*multiplier_frequency);
 		}
@@ -356,7 +356,7 @@ void test_song()
 
 		if (note == num_notes)
 			note = 0;
-		
+
 		_delay_ms(MAIN_TICK_MS);
 		counter += MAIN_TICK_MS;
 	}
@@ -518,7 +518,7 @@ void the_game()
 				note = 0;
 				prev_mode = user_mode;
 			}
-			
+
 			int num_notes = (int)(sizeof(music_frequency) / sizeof(music_frequency[0]));
 			int *frequency = music_frequency;
 			int *length = music_length;
@@ -535,7 +535,7 @@ void the_game()
 				multiplier_frequency = LOST_MULTIPLIER_FREQUENCY;
 				multiplier_length = LOST_MULTIPLIER_LENGTH;
 			}
-				
+
 			if (counter <= MAIN_TICK_MS) {
 				wave_frequency(frequency[note]*multiplier_frequency);
 			}
@@ -551,7 +551,7 @@ void the_game()
 
 			if (note == num_notes)
 				note = 0;
-			
+
 			counter += MAIN_TICK_MS;
 		}
 
