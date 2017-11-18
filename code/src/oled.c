@@ -90,7 +90,7 @@ void oled_test()
 	*oled_command = 0xa4;
 	*oled_command = 0xa6;
 	*oled_command = 0xaf;
-	
+
 	while (1)
 	{
 		*oled_data = 0xff;
@@ -116,7 +116,6 @@ void oled_write_char(char c)
 	for (int i = 0; i < 5; i++)
 	oled_set_pixels(pgm_read_byte(&font5[c - ' '][i]));
 }
-
 void oled_print(const char *str)
 {
 	const char *c = str;
@@ -126,4 +125,10 @@ void oled_print(const char *str)
 		oled_set_pixels(0);
 		c++;
 	}
+}
+void oled_print_u16(uint16_t x)
+{
+    char buffer[6];
+    sprintf(buffer, "%u", x);
+    oled_print(buffer);
 }

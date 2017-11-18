@@ -13,13 +13,6 @@
 
 #include "tests.c"
 
-void oled_print_u16(uint16_t x)
-{
-	char buffer[6];
-	sprintf(buffer, "%u", x);
-	oled_print(buffer);
-}
-
 void the_game()
 {
     uart_init(9600);

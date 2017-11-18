@@ -18,4 +18,5 @@ void oled_clear();
 void oled_test();
 void oled_write_char(char c);
 void oled_print(const char *str);
+void oled_print_u16(uint16_t x);
 #endif
