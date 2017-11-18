@@ -565,7 +565,7 @@ int main(void)
 {
 	// uart_test();
 	// test_mcp();
-	// test_can_loopback();
+	test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
 	// test_servo();
@@ -575,5 +575,5 @@ int main(void)
 	// test_solenoid();
 	// test_motor_with_joystick();
 	// test_song();
-	the_game();
+	// the_game();
 }
