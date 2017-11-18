@@ -147,13 +147,18 @@ void mcp_mode_normal() {
 }
 
 void mcp_send_message(uint16_t id, uint8_t *data, uint8_t length) {
+	
+	// Clamp the length. You can send at most 8 bytes.
+	if (length > 8)
+		length = 8;
+	
     // Write the ID
     uint8_t id_high = (uint8_t)(id >> 3);
     uint8_t id_low = (uint8_t)((id & 0b111) << 5);
     mcp_write(MCP_TXB0SIDH, id_high);
     mcp_write(MCP_TXB0SIDL, id_low);
 
-    // Write length of message (0 to 8 bytes)
+    // Write length of message (0 to 8 bytes) (last 4 bits of DLC)
     // Note: this also sets RTR to 0 (indicating a data frame)
     // Note: it is possible to set the value greater than 8, but only
     // 8 bytes are allowed anyway.
