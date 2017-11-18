@@ -610,11 +610,11 @@ void the_game()
         //
         uint8_t light_blocked = 0;
         {
+			can_msg_node2_to_node1 msg = {0};
             uint16_t id;
-            uint8_t data[8];
-            uint8_t length;
-            if (mcp_read_message(&id, data, &length))
-                light_blocked = data[0];
+			uint8_t length;
+			if (mcp_read_message(&id, (uint8_t*)&msg, &length))
+				light_blocked = msg.light_blocked;
         }
 
 		if (mode == MODE_MENU)
@@ -728,26 +728,24 @@ void the_game()
 		// Send controller input to node 2 over CAN
 		//
 		{
-			uint8_t angle = 0;
-			uint8_t position = 0;
-			uint8_t shoot = 0;
+			can_msg_node1_to_node2 msg = {0};
+			msg.mode = mode;
 
 			if (controller == CONTROLLER_P1000)
 			{
-				angle = joy_x;
-				position = slider;
-				shoot = button;
+				msg.angle = joy_x;
+				msg.position = slider;
+				msg.shoot = button;
 			}
 			else if (controller == CONTROLLER_REMOTE)
 			{
-				angle = remote_tilt;
-				position = 0;
-				shoot = remote_button;
+				msg.angle = remote_tilt;
+				msg.position = 0;
+				msg.shoot = remote_button;
 			}
 
 			uint8_t id = 0;
-			uint8_t data[] = { angle, position, shoot, mode };
-			mcp_send_message(id, data, sizeof(data));
+			mcp_send_message(id, (uint8_t*)&msg, sizeof(msg));
 		}
 
 		_delay_ms(MAIN_TICK_MS);

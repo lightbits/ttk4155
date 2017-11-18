@@ -426,14 +426,14 @@ void the_game()
 		static uint8_t user_mode = MODE_MENU;
 		{
 		    uint16_t id;
-		    uint8_t data[8];
-		    uint8_t length;
-		    if (mcp_read_message(&id, data, &length))
+			can_msg_node1_to_node2 msg = {0};
+			uint8_t length;
+		    if (mcp_read_message(&id, (uint8_t*)&msg, &length))
 		    {
-		        user_angle = data[0];
-				user_position = data[1];
-	        	user_shoot = data[2];
-		        user_mode = data[3];
+		        user_angle = msg.angle;
+				user_position = msg.position;
+	        	user_shoot = msg.shoot;
+		        user_mode = msg.mode;
 		    }
 		}
 
@@ -442,8 +442,9 @@ void the_game()
 		//
 		{
 		    uint16_t id = 1;
-		    uint8_t data[] = { light_broken };
-		    mcp_send_message(id, data, (uint8_t)sizeof(data));
+			can_msg_node2_to_node1 msg = {0};
+			msg.light_blocked = light_broken;
+		    mcp_send_message(id, (uint8_t*)&msg, sizeof(msg));
 		}
 
 		if (user_mode == MODE_PLAY)
@@ -457,7 +458,7 @@ void the_game()
 				motor_velocity(0);
 			servo_position((float)(user_position-28)/255);
 			if (loop_iteration % 100 == 0)
-				printf("%d\n", user_position);
+				printf("%d %d\n", (int)user_position, (int)user_angle);
 			#else
 			//
 			// Control servo angle
