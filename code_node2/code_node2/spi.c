@@ -6,7 +6,6 @@
 #define SPI_MOSI   PB2
 #define SPI_SCK    PB1
 #define SPI_SS     PB0 // Page 195: This must be set as output for SPI to work.
-#define MCP2510_SS PB7
 void spi_init()
 {
     DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);
