@@ -1,7 +1,8 @@
 // This enables SPI on the ATmega2560 to communicate with the MCP2510
 // on the I/O board. Polarity and Phase are 0,0. Rate is F_CPU/16.
 // See page 193 for example code which the below is based on.
-#include "spi.h"
+#include "../../spi.h"
+#include "common.h"
 #define SPI_MISO   PB3
 #define SPI_MOSI   PB2
 #define SPI_SCK    PB1

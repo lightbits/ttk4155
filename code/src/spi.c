@@ -1,37 +1,26 @@
-#include <avr/io.h>
-#include "spi.h"
-
-#define SPI_SS PB4
+// This enables SPI on the ATmega162 to communicate with the MCP2515
+// and the NRF. Polarity and Phase are 0,0. Rate is F_CPU/16.
+// See page 160 for example code which the below is based on.
+#include "../../spi.h"
+#include "common.h"
+#define SPI_SS   PB4  // This must be set as output for SPI to work.
 #define SPI_MOSI PB5
 #define SPI_MISO PB6
-#define SPI_SCK PB7
-
-void spi_init(void) {
-	// Set MOSI, SCK and SS output, all others input
-	DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);
-	
-	// Enable SPI, Master, set clock rate fck/16
-	SPCR = (1<<MSTR) | (1<<SPR0);
-	SPCR |= (1<<SPE);
+#define SPI_SCK  PB7
+void spi_init()
+{
+    DDRB = (1<<SPI_MOSI) | (1<<SPI_SCK) | (1<<SPI_SS);
+    SPCR = (1<<MSTR) | (1<<SPR0);
+    SPCR |= (1<<SPE); // For some reason we need to |= this in after the above.
+}
+uint8_t spi_write(uint8_t data)
+{
+    SPDR = data;
+    while(!(SPSR & (1<<SPIF)));
+    return SPDR;
+}
+uint8_t spi_read()
+{
+    return spi_write(0xDC);
 }
 
-uint8_t spi_write(char data) {
- 	SPDR = data; // write byte and start transmission
- 	while(!(SPSR & (1<<SPIF))); // wait until transmission is done
- 	return SPDR; // return data that was shifted in simultaneously from slave
-}
-
-uint8_t spi_read(void) {
-	return spi_write(0xDC); // write a dummy byte and return the slave data
-}
-
-void spi_slave_select(void) {
- 	// Set !SS to 0 for activation of slave selection
- 	clear_bit(PORTB, SPI_SS);
-}
-
-
-void spi_slave_deselect(void) {
-	// Set !SS to 1 to deactivation of slave selection
- 	set_bit(PORTB, SPI_SS);
-}
