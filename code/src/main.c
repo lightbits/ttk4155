@@ -373,7 +373,7 @@ void test_mcp()
         _delay_ms(100);
     }
 }
-
+#endif
 void test_can_loopback()
 {
     uart_init(9600);
@@ -407,7 +407,7 @@ void test_can_loopback()
 		_delay_ms(2000);
     }
 }
-
+#if 0
 void test_can_between_nodes()
 {
 	uart_init(9600);
@@ -766,9 +766,9 @@ int main (void)
     // test_symbols();
     // test_menu();
     // test_mcp();
-	// test_can_loopback();
+	test_can_loopback();
 	// test_can_between_nodes();
 	// test_can_and_joystick();
 	// test_nrf();
-	the_game();
+	// the_game();
 }
