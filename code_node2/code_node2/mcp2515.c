@@ -75,47 +75,42 @@ void mcp_read_many(uint8_t address, uint8_t *data, uint8_t count) {
     mcp_slave_deselect();
 }
 
-int mcp_write(uint8_t address, uint8_t data) {
+void mcp_write(uint8_t address, uint8_t data) {
     mcp_slave_select();
     mcp_spi_write(MCP_WRITE);
     mcp_spi_write(address);
     mcp_spi_write(data);
     mcp_slave_deselect();
-    return 0;
 }
 
-int mcp_write_many(uint8_t address, uint8_t *data, uint8_t count) {
+void mcp_write_many(uint8_t address, uint8_t *data, uint8_t count) {
     mcp_slave_select();
     mcp_spi_write(MCP_WRITE);
     mcp_spi_write(address);
     for (uint8_t i = 0; i < count; i++)
         mcp_spi_write(data[i]);
     mcp_slave_deselect();
-    return 0;
 }
 
-int mcp_request_to_send(uint8_t bitflag) {
+void mcp_request_to_send(uint8_t bitflag) {
     mcp_slave_select();
     mcp_spi_write(MCP_RTS | (bitflag & 7));
     mcp_slave_deselect();
-    return 0;
 }
 
-int mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
+void mcp_bit_modify(uint8_t address, uint8_t mask, uint8_t data) {
     mcp_slave_select();
     mcp_spi_write(MCP_BIT_MODIFY);
     mcp_spi_write(address);
     mcp_spi_write(mask);
     mcp_spi_write(data);
     mcp_slave_deselect();
-    return 0;
 }
 
-int mcp_reset(void) {
+void mcp_reset(void) {
     mcp_slave_select();
     mcp_spi_write(MCP_RESET);
     mcp_slave_deselect();
-    return 0;
 }
 
 mcp_status mcp_get_status()
