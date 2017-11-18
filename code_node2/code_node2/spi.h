@@ -1,10 +1,10 @@
 // This enables SPI on the ATmega2560 to communicate with the MCP2510
 // on the I/O board. Polarity and Phase are 0,0. Rate is F_CPU/16.
 // See page 193 for example code which the below is based on.
-#ifndef SPI_ATMEGA2560_H
-#define SPI_ATMEGA2560_H
-#define SPI_MOSI   PB2
+#ifndef SPI_H
+#define SPI_H
 #define SPI_MISO   PB3
+#define SPI_MOSI   PB2
 #define SPI_SCK    PB1
 #define SPI_SS     PB0 // Page 195: This must be set as output for SPI to work.
 #define MCP2510_SS PB7
