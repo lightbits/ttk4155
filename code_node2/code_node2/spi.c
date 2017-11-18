@@ -12,8 +12,9 @@ void spi_init()
 	set_bit(DDRB, SPI_MOSI);
 	set_bit(DDRB, SPI_SCK);
 	set_bit(DDRB, SPI_SS);
-    SPCR = (1<<MSTR) | (1<<SPR0);
-    SPCR |= (1<<SPE); // For some reason we need to |= this in after the above.
+	set_bit(SPCR, MSTR); // Master mode
+	set_bit(SPCR, SPR0); // F_CPU / 16
+	set_bit(SPCR, SPE); // Enable SPI
 }
 uint8_t spi_write(uint8_t data)
 {
