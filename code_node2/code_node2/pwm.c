@@ -17,16 +17,15 @@ void pwm_init(uint32_t frequency)
 	set_bit(DDRB, 6);
 
 	// Set the clock divisor and start clock
-	#define N PWM_CLOCK_DIVISOR
-	#if N==1
+	#if PWM_CLOCK_DIVISOR==1
 	TCCR1B = (TCCR1B & 0b11111000) | 0b001; // F_CPU/1
-	#elif N==8
+	#elif PWM_CLOCK_DIVISOR==8
 	TCCR1B = (TCCR1B & 0b11111000) | 0b010; // F_CPU/8
-	#elif N==64
+	#elif PWM_CLOCK_DIVISOR==64
 	TCCR1B = (TCCR1B & 0b11111000) | 0b011; // F_CPU/64
-	#elif N==256
+	#elif PWM_CLOCK_DIVISOR==256
 	TCCR1B = (TCCR1B & 0b11111000) | 0b100; // F_CPU/256
-	#elif N==1024
+	#elif PWM_CLOCK_DIVISOR==1024
 	TCCR1B = (TCCR1B & 0b11111000) | 0b101; // F_CPU/1024
 	#else
 	#error "PWM_CLOCK_DIVISOR must be one of 1,8,64,256 or 1024"
