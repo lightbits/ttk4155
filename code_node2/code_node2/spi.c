@@ -18,11 +18,11 @@ void spi_init()
 }
 uint8_t spi_write(uint8_t data)
 {
-    SPDR = data;
-    while(!(SPSR & (1<<SPIF)));
-    return SPDR;
+	SPDR = data;
+	while(!(SPSR & (1<<SPIF)));
+	return SPDR;
 }
 uint8_t spi_read()
 {
-    return spi_write(0xDC);
+	return spi_write(0xDC);
 }

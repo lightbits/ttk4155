@@ -147,11 +147,11 @@ void mcp_mode_normal() {
 }
 
 void mcp_send_message(uint16_t id, uint8_t *data, uint8_t length) {
-	
-	// Clamp the length. You can send at most 8 bytes.
-	if (length > 8)
-		length = 8;
-	
+
+    // Clamp the length. You can send at most 8 bytes.
+    if (length > 8)
+        length = 8;
+
     // Write the ID
     uint8_t id_high = (uint8_t)(id >> 3);
     uint8_t id_low = (uint8_t)((id & 0b111) << 5);

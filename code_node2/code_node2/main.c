@@ -36,11 +36,11 @@ void the_game()
 		//
 		uint16_t ir_raw = 0;
 		{
-		    ADCSRA = (1 << ADEN); // Enable ADC
-		    ADMUX = (1 << REFS0); // Use AVCC as voltage source
-		    set_bit(ADCSRA, ADSC); // Start conversion
-		    while (test_bit(ADCSRA, ADSC)) ; // wait until done
-		    ir_raw = ADC;
+			ADCSRA = (1 << ADEN); // Enable ADC
+			ADMUX = (1 << REFS0); // Use AVCC as voltage source
+			set_bit(ADCSRA, ADSC); // Start conversion
+			while (test_bit(ADCSRA, ADSC)) ; // wait until done
+			ir_raw = ADC;
 		}
 
 		//
@@ -48,22 +48,22 @@ void the_game()
 		//
 		uint8_t light_broken = 0;
 		{
-		    #define num_past_values 20
-		    static uint16_t past_values[num_past_values]; // todo: init to zero
+			#define num_past_values 20
+			static uint16_t past_values[num_past_values]; // todo: init to zero
 
-		    // shift in latest measurement
-		    for (int i = 0; i < num_past_values - 1; i++)
-		        past_values[i] = past_values[i+1];
-		    past_values[num_past_values-1] = ir_raw;
+			// shift in latest measurement
+			for (int i = 0; i < num_past_values - 1; i++)
+				past_values[i] = past_values[i+1];
+			past_values[num_past_values-1] = ir_raw;
 
-		    // compute average
-		    uint16_t sum = 0;
-		    for (int i = 0; i < num_past_values; i++)
-		        sum += past_values[i];
-		    uint16_t avg = sum / num_past_values;
+			// compute average
+			uint16_t sum = 0;
+			for (int i = 0; i < num_past_values; i++)
+				sum += past_values[i];
+			uint16_t avg = sum / num_past_values;
 
-		    // simple filter... the average is reacts slower than instant measurements
-		    light_broken = (avg < 10) ? 1 : 0;
+			// simple filter... the average is reacts slower than instant measurements
+			light_broken = (avg < 10) ? 1 : 0;
 		}
 
 		//
@@ -74,26 +74,26 @@ void the_game()
 		static uint8_t user_position = 0;
 		static uint8_t user_mode = MODE_MENU;
 		{
-		    uint16_t id;
+			uint16_t id;
 			can_msg_node1_to_node2 msg = {0};
 			uint8_t length;
-		    if (mcp_read_message(&id, (uint8_t*)&msg, &length))
-		    {
-		        user_angle = msg.angle;
+			if (mcp_read_message(&id, (uint8_t*)&msg, &length))
+			{
+				user_angle = msg.angle;
 				user_position = msg.position;
-	        	user_shoot = msg.shoot;
-		        user_mode = msg.mode;
-		    }
+				user_shoot = msg.shoot;
+				user_mode = msg.mode;
+			}
 		}
 
 		//
 		// Send IR signal to node 1
 		//
 		{
-		    uint16_t id = 1;
+			uint16_t id = 1;
 			can_msg_node2_to_node1 msg = {0};
 			msg.light_blocked = light_broken;
-		    mcp_send_message(id, (uint8_t*)&msg, sizeof(msg));
+			mcp_send_message(id, (uint8_t*)&msg, sizeof(msg));
 		}
 
 		if (user_mode == MODE_PLAY)
