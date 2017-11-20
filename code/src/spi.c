@@ -9,21 +9,21 @@
 #define SPI_SCK  PB7
 void spi_init()
 {
-    set_bit(DDRB, SPI_MOSI);
-    set_bit(DDRB, SPI_SCK);
-    set_bit(DDRB, SPI_SS);
-    set_bit(SPCR, MSTR); // Master mode
+	set_bit(DDRB, SPI_MOSI);
+	set_bit(DDRB, SPI_SCK);
+	set_bit(DDRB, SPI_SS);
+	set_bit(SPCR, MSTR); // Master mode
 	set_bit(SPCR, SPR0); // F_CPU / 16
 	set_bit(SPCR, SPE); // Enable SPI
 }
 uint8_t spi_write(uint8_t data)
 {
-    SPDR = data;
-    while(!(SPSR & (1<<SPIF)));
-    return SPDR;
+	SPDR = data;
+	while(!(SPSR & (1<<SPIF)));
+	return SPDR;
 }
 uint8_t spi_read()
 {
-    return spi_write(0xDC);
+	return spi_write(0xDC);
 }
 

@@ -14,15 +14,15 @@ void oled_flip_screen()
 }
 void oled_set_column(uint8_t column)
 {
-    *oled_command = 0x21;
-    *oled_command = column; // start address
-    *oled_command = 127; // end address
+	*oled_command = 0x21;
+	*oled_command = column; // start address
+	*oled_command = 127; // end address
 }
 void oled_set_page(uint8_t page)
 {
-    *oled_command = 0x22;
-    *oled_command = page; // start address
-    *oled_command = 7; // end address
+	*oled_command = 0x22;
+	*oled_command = page; // start address
+	*oled_command = 7; // end address
 }
 void oled_xy(uint8_t x, uint8_t y)
 {
@@ -31,8 +31,8 @@ void oled_xy(uint8_t x, uint8_t y)
 }
 void oled_horizontal_addressing_mode()
 {
-    *oled_command = 0x20;
-    *oled_command = 0x00;
+	*oled_command = 0x20;
+	*oled_command = 0x00;
 }
 
 void oled_page_addressing_mode()
@@ -43,24 +43,24 @@ void oled_page_addressing_mode()
 
 void oled_contrast(uint8_t contrast)
 {
-    *oled_command = 0x81;
-    *oled_command = contrast;
+	*oled_command = 0x81;
+	*oled_command = contrast;
 }
 void oled_reset_contrast()
 {
-    *oled_command = 0x81;
-    *oled_command = 0x7f;
+	*oled_command = 0x81;
+	*oled_command = 0x7f;
 }
 void oled_init()
 {
-    oled_power_off();
-    oled_invert_off();
-    // oled_horizontal_addressing_mode();
+	oled_power_off();
+	oled_invert_off();
+	// oled_horizontal_addressing_mode();
 	oled_page_addressing_mode();
-    oled_set_page(0);
-    oled_set_column(0);
-    oled_contrast(0x50);
-    oled_power_on();
+	oled_set_page(0);
+	oled_set_column(0);
+	oled_contrast(0x50);
+	oled_power_on();
 
 	// unflip screen
 	*oled_command = 0xc0;
@@ -99,7 +99,7 @@ void oled_test()
 }
 void oled_set_pixels(uint8_t pixels)
 {
-    *oled_data = pixels;
+	*oled_data = pixels;
 }
 void oled_clear()
 {
@@ -128,7 +128,7 @@ void oled_print(const char *str)
 }
 void oled_print_u16(uint16_t x)
 {
-    char buffer[6];
-    sprintf(buffer, "%u", x);
-    oled_print(buffer);
+	char buffer[6];
+	sprintf(buffer, "%u", x);
+	oled_print(buffer);
 }

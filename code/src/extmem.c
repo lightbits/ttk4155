@@ -26,5 +26,5 @@ void ext_mem_init(void)
 
 void ext_mem_disable(void)
 {
-	clear_bit(MCUCR, SRE);
+    clear_bit(MCUCR, SRE);
 }
