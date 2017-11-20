@@ -24,6 +24,11 @@ void motor_init()
     sei(); // enable interrupts
 }
 
+// todo: We don't reset the encoder after reading. This means
+// that it could possibly overflow. However, we found that the
+// encoder maximum was about 8000 (moving carriage from left to
+// right of the game box), which is well within the range of 15
+// bits. If it overflows it means that the encoder is drifting.
 int16_t motor_read_encoder()
 {
     clear_bit(MOTOR_PORT, MOTOR_PIN_OE);
@@ -33,9 +38,12 @@ int16_t motor_read_encoder()
     set_bit(MOTOR_PORT, MOTOR_PIN_SEL);
     _delay_us(20);
     uint8_t low_byte = ENCODER_INPUT;
+
+    // todo: If we do reset, this is where we do it
     //clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
     //_delay_us(20);
     //set_bit(MOTOR_PORT, MOTOR_PIN_RST);
+
     set_bit(MOTOR_PORT, MOTOR_PIN_OE);
     return ((int16_t)high_byte)<<8 | (low_byte);
 }
