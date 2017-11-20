@@ -35,7 +35,8 @@ void the_game()
 
 	printf("Ready!\n");
 
-	#define MINIMUM_LOOP_DELAY_MS 50
+	#define MINIMUM_LOOP_DELAY_MS 5
+	#define MENU_UPDATE_PERIOD_MS 50
 	const uint8_t CONTROLLER_P1000 = 0;
 	const uint8_t CONTROLLER_REMOTE = 1;
 
@@ -113,7 +114,21 @@ void the_game()
 			mcp_send_message(id, (uint8_t*)&msg, sizeof(msg));
 		}
 
-		// if (should_update_menu)
+		//
+		// Check if enough time has passed since we lasted updated the menu
+		//
+		uint8_t should_update_menu = 0;
+		{
+			static uint32_t t = 0;
+			t += timer_ms_elapsed() - t;
+			if (t > MENU_UPDATE_PERIOD_MS)
+			{
+				t = 0;
+				should_update_menu = 1;
+			}
+		}
+
+		if (should_update_menu)
 		{
 			//
 			// Check if joystick was moved up, down, left or right once
