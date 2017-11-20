@@ -284,8 +284,12 @@ void the_game()
 		// Twiddle thumbs for MINIMUM_LOOP_DELAY_MS
 		//
 		{
-			uint32_t t = timer_ms_elapsed();
-			while (timer_ms_elapsed() - t < MINIMUM_LOOP_DELAY_MS) ;
+			static uint32_t loop_begin_time = 0;
+			while (timer_ms_elapsed() - loop_begin_time < MINIMUM_LOOP_DELAY_MS)
+			{
+				// do nothing
+			}
+			loop_begin_time = timer_ms_elapsed();
 		}
 	}
 }
