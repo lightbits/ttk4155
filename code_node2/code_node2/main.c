@@ -14,6 +14,11 @@
 
 void the_game()
 {
+	// Note: the wireless remote is only compatible with the velocity regulator
+	#define USE_VELOCITY_REGULATOR
+	// #define USE_SWITCHING_MODE_REGULATOR
+	// #define USE_PI_REGULATOR
+
 	uart_init(9600);
 	mcp_init();
 	mcp_mode_normal();
@@ -98,7 +103,10 @@ void the_game()
 
 		if (user_mode == MODE_PLAY)
 		{
-			#if 1
+			//
+			// Control servo position and motor speed
+			//
+			#if USE_VELOCITY_REGULATOR
 			if (user_angle < 100)
 				motor_velocity(100);
 			else if (user_angle > 150)
@@ -106,41 +114,51 @@ void the_game()
 			else
 				motor_velocity(0);
 			servo_position((float)(user_position-28)/255);
-			if (loop_iteration % 100 == 0)
-				printf("%d %d\n", (int)user_position, (int)user_angle);
-			#else
-			//
-			// Control servo angle
-			//
-			{
-				float position = (float)(user_angle-28)/255;
-				servo_position(position);
-			}
-
-			//
-			// Control motor position
-			//
+			#elif USE_SWITCHING_MODE_REGULATOR
 			{
 				const int32_t ENCODER_MAX = 6000;
 				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
 				int32_t actual_position = motor_read_encoder();
-
-				{
-					int32_t band = 1000;
-					int32_t error = (desired_position - actual_position);
-					if (error > band)
-						motor_velocity(100);
-					else if (error < -band)
-						motor_velocity(-100);
-					else
-					{
-						if (error > 0)
-							motor_velocity(30 + (40*error)/band);
-						else
-							motor_velocity(-30 + (40*error)/band);
-					}
-				}
+				int32_t band = 1000;
+				int32_t error = (desired_position - actual_position);
+				if (error > band)
+					motor_velocity(100);
+				else if (error < -band)
+					motor_velocity(-100);
+				else if (error > 0)
+					motor_velocity(30 + (40*error)/band);
+				else if (error < 0)
+					motor_velocity(-30 + (40*error)/band);
+				else
+					motor_velocity(0);
 			}
+			servo_position((float)(user_angle-28)/255);
+			#elif USE_PI_REGULATOR
+			{
+				const int32_t ENCODER_MAX = 6000;
+				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
+				int32_t actual_position = motor_read_encoder();
+				int32_t error = (desired_position - actual_position);
+				int32_t e_at_max_speed = 500;
+				int32_t max_speed = 200;
+				int32_t u_p = (max_speed*e)/e_at_max_speed;
+
+				static int32_t sum_e_dt = 0;
+				sum_e_dt += error*MAIN_TICK_MS;
+				int32_t u_i = (5*max_speed*(sum_e_dt/1000))/e_at_max_speed;
+				int32_t u = u_p + u_i;
+				if (u > max_speed) u = max_speed;
+				if (u < -max_speed) u = -max_speed;
+				motor_velocity(u);
+
+				// Proportional gain: We want max_speed when
+				// the error is e_at_max_speed. Therefore,
+				// u_p = K*e = max_speed*e/e_at_max_speed.
+
+				// Integral gain: Rule-of-thumb take proportional
+				// gain and multiply by 5...
+			}
+			servo_position((float)(user_angle-28)/255);
 			#endif
 
 			//
@@ -204,8 +222,6 @@ void the_game()
 
 			counter += MAIN_TICK_MS;
 		}
-
-		// printf("(node 2) %d %d\n", ir_raw, user_shoot);
 
 		_delay_ms(MAIN_TICK_MS);
 	}
