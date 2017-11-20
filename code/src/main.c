@@ -43,7 +43,6 @@ void the_game()
 	uint8_t mode = MODE_MENU;
 	uint8_t flip_screen = 1;
 	uint8_t controller = CONTROLLER_P1000;
-	uint32_t time_played = 0;
 
 	if (flip_screen)
 		oled_flip_screen();
@@ -130,6 +129,12 @@ void the_game()
 
 		if (should_update_menu)
 		{
+			// These time markers are used to keep track of how long
+			// we've been playing, or how long the "GAME LOST" screen
+			// has been up.
+			static uint32_t start_play_time = 0;
+			static uint32_t start_lost_time = 0;
+
 			//
 			// Check if joystick was moved up, down, left or right once
 			// (used to navigate menu)
