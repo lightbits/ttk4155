@@ -1,26 +1,32 @@
 #ifndef NRF_HEADER
 #define NRF_HEADER
 //
-// nRF24L01
+// nRF24L01 2.4GHz wireless chip
 //
-// SPI requirements
-// * Polarity 0 (SCK idle low)
-// * Phase 0 (Data changes on falling SCK / Data is sampled on rising SCK)
-// * Maximum 8Mbps
+// To use the chip, connect it to a SPI bus and enable SPI with
+//  Polarity: 0 (SCK idle low)
+//  Phase:    0 (Data changes on falling SCK)
+//  Datarate: Maximum 8Mbps
 //
-// You define these
-void nrf_spi_select();
-void nrf_spi_deselect();
-void nrf_chip_enable();
-void nrf_chip_disable();
-void nrf_pin_enable();
+// Connect CSN and CE to GPIO pins.
+//
+// Then, implement the following functions for your specific device
+//
+void nrf_spi_select();   // CSN = 0
+void nrf_spi_deselect(); // CSN = 1
+void nrf_chip_enable();  // CE = 1
+void nrf_chip_disable(); // CE = 0
+void nrf_pin_enable();   // Configure CSN,CE as output pins
 uint8_t nrf_spi_send(uint8_t data);
-// Hardware-independent interface
+
+//
+// You can then call these functions that rely on the SPI interface
+//
 void    nrf_init();
 void    nrf_transmit(uint8_t *data, uint8_t count);
-void    nrf_write_register(uint8_t register_address, uint8_t data);
-void    nrf_write_payload(uint8_t *data, uint8_t count);
 uint8_t nrf_read_payload(uint8_t *data, uint8_t count);
+void    nrf_write_payload(uint8_t *data, uint8_t count);
+void    nrf_write_register(uint8_t register_address, uint8_t data);
 uint8_t nrf_read_status();
 uint8_t nrf_read_register(uint8_t register_address);
 #endif
@@ -51,7 +57,7 @@ void nrf_pin_enable()
 // Hardware specific implementation for ATmega162
 // node 1 game board. Ensure PB0 -> CSN. PB1 -> CE.
 // and connection to SPI interface (MOSI/MISO/SCK).
-// Also assumes you level-shift MISO from 3.3v to 
+// Also assumes you level-shift MISO from 3.3v to
 // 5v using a single (inverting) transistor. This
 // is why I invert the spi_write return value below.
 //

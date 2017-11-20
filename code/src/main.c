@@ -9,7 +9,7 @@
 
 #define NRF_IMPLEMENTATION
 #define NRF_ATMEGA162_IMPLEMENTATION
-#include "nrf.c"
+#include "../../nrf.c"
 
 #include "tests.c"
 
