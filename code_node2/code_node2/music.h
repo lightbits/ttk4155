@@ -1,7 +1,25 @@
 #ifndef MUSIC_H
 #define MUSIC_H
+#ifndef MUSIC_CLOCK_DIVISOR
+#define MUSIC_CLOCK_DIVISOR 8
+#endif
 #include "common.h"
-#define MARIO_MULTIPLIER_FREQUENCY 4
+
+void wave_frequency(uint32_t frequency);
+// This enables PWM on PE3/OC3A with output toggling on compare-match.
+// This means that the output is a square wave which is low for one TOP
+// period and high the next TOP period. In other words, the length of a
+// cycle is 2*TOP, and the output wave frequency is
+//   f = (F_CPU/N) / (2*TOP)
+//
+// The clock divisor, N, must be chosen such that for the frequencies
+// you want to play, the value of TOP fits inside a 16-bit register.
+// (Set this value by #defining MUSIC_CLOCK_DIVISOR)
+//
+// Note also that the frequencies are quantized by rounding TOP to the
+// nearest 16-bit integer.
+
+#define MARIO_MULTIPLIER_FREQUENCY 2
 #define MARIO_MULTIPLIER_LENGTH (2.0f/3.0f)
 const uint16_t music_frequency[] = {
 	330,
@@ -414,20 +432,20 @@ const uint16_t music_delay[] = {
 	5000,
 };
 
-#define LOST_MULTIPLIER_FREQUENCY 2
+#define LOST_MULTIPLIER_FREQUENCY 1
 #define LOST_MULTIPLIER_LENGTH 2
 const uint16_t music_lost_frequency[] = {
-	1046, 
-	784, 
-	659, 
-	880, 
-	988, 
-	880, 
-	831, 
-	932, 
-	831, 
-	784, 
-	740, 
+	1046,
+	784,
+	659,
+	880,
+	988,
+	880,
+	831,
+	932,
+	831,
+	784,
+	740,
 	784
 };
 
@@ -438,5 +456,4 @@ const uint16_t music_lost_length[] = {
 const uint16_t music_lost_delay[] = {
 	50, 50, 50, 50, 50, 50, 50, 50, 50, 20, 20, 1000
 };
-void wave_frequency(uint32_t frequency);
 #endif
