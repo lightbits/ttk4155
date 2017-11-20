@@ -24,7 +24,6 @@ void wave_frequency(uint32_t frequency)
 
 		// Set the clock divisor and start clock
 		#define N MUSIC_CLOCK_DIVISOR
-		#define N 8
 		#if N==1
 		TCCR3B = (TCCR3B & 0b11111000) | 0b001; // F_CPU/1
 		#elif N==8
