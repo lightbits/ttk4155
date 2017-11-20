@@ -9,7 +9,7 @@ void pwm_init(uint32_t frequency)
 	set_bit(TCCR1A, WGM11);
 	set_bit(TCCR1A, WGM10);
 
-	// Enable non-inverting mode (table 17-4)
+	// Enable inverting mode (table 17-4)
 	set_bit(TCCR1A, COM1B1);
 	set_bit(TCCR1A, COM1B0);
 
