@@ -15,9 +15,8 @@
 void the_game()
 {
 	// Note: the wireless remote is only compatible with the velocity regulator
-	#define USE_VELOCITY_REGULATOR
-	// #define USE_SWITCHING_MODE_REGULATOR
-	// #define USE_PI_REGULATOR
+	#define USE_VELOCITY_REGULATOR       1
+	#define USE_SWITCHING_MODE_REGULATOR 0
 
 	uart_init(9600);
 	mcp_init();
@@ -33,7 +32,7 @@ void the_game()
 
 	#define MAIN_TICK_MS 5
 
-	for (int loop_iteration = 0; ; loop_iteration++)
+	while (1)
 	{
 		//
 		// Read IR light (raw ADC voltage measurement)
@@ -106,15 +105,18 @@ void the_game()
 			//
 			// Control servo position and motor speed
 			//
-			#if USE_VELOCITY_REGULATOR
-			if (user_angle < 100)
-				motor_velocity(100);
-			else if (user_angle > 150)
-				motor_velocity(-100);
-			else
-				motor_velocity(0);
-			servo_position((float)(user_position-28)/255);
-			#elif USE_SWITCHING_MODE_REGULATOR
+			#if USE_VELOCITY_REGULATOR==1
+			{
+				if (user_angle < 100)
+					motor_velocity(100);
+				else if (user_angle > 150)
+					motor_velocity(-100);
+				else
+					motor_velocity(0);
+
+				servo_position((float)(user_position-28)/255);	
+			}
+			#elif USE_SWITCHING_MODE_REGULATOR==1
 			{
 				const int32_t ENCODER_MAX = 6000;
 				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
@@ -131,34 +133,9 @@ void the_game()
 					motor_velocity(-30 + (40*error)/band);
 				else
 					motor_velocity(0);
+
+				servo_position((float)(user_angle-28)/255);
 			}
-			servo_position((float)(user_angle-28)/255);
-			#elif USE_PI_REGULATOR
-			{
-				const int32_t ENCODER_MAX = 6000;
-				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
-				int32_t actual_position = motor_read_encoder();
-				int32_t error = (desired_position - actual_position);
-				int32_t e_at_max_speed = 500;
-				int32_t max_speed = 200;
-				int32_t u_p = (max_speed*e)/e_at_max_speed;
-
-				static int32_t sum_e_dt = 0;
-				sum_e_dt += error*MAIN_TICK_MS;
-				int32_t u_i = (5*max_speed*(sum_e_dt/1000))/e_at_max_speed;
-				int32_t u = u_p + u_i;
-				if (u > max_speed) u = max_speed;
-				if (u < -max_speed) u = -max_speed;
-				motor_velocity(u);
-
-				// Proportional gain: We want max_speed when
-				// the error is e_at_max_speed. Therefore,
-				// u_p = K*e = max_speed*e/e_at_max_speed.
-
-				// Integral gain: Rule-of-thumb take proportional
-				// gain and multiply by 5...
-			}
-			servo_position((float)(user_angle-28)/255);
 			#endif
 
 			//
