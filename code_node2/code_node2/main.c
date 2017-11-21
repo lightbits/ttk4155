@@ -151,6 +151,7 @@ void the_game()
 		else
 		{
 			motor_reset();
+			motor_velocity(0);
 		}
 
 		//
