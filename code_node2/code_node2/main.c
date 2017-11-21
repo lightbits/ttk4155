@@ -205,6 +205,8 @@ void the_game()
 			counter += MAIN_TICK_MS;
 		}
 
+		// Note: todo: this assumes that all the work above took 0 milliseconds, which
+		// is not exactly correct. But, for now it is close enough.
 		_delay_ms(MAIN_TICK_MS);
 	}
 }
