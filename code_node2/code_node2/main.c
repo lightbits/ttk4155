@@ -8,15 +8,15 @@
 #include "motor.h"
 #include "solenoid.h"
 #include "servo.h"
-#include "music.h"
 #include "music.c"
 #include "tests.c"
 
 void the_game()
 {
 	// Note: the wireless remote is only compatible with the velocity regulator
-	#define USE_VELOCITY_REGULATOR 1
+	#define USE_VELOCITY_REGULATOR 0
 	#define USE_POSITION_REGULATOR 0
+	#define USE_PI_REGULATOR 1
 
 	uart_init(9600);
 	mcp_init();
@@ -136,6 +136,25 @@ void the_game()
 
 				servo_position((float)(user_angle-28)/255);
 			}
+			//#elif USE_PI_REGULATOR==1
+			//{
+				//const int32_t ENCODER_MAX = 6000;
+				//int32_t desired_position = ENCODER_MAX*(int32_t)(255-user_position)/255;
+				//int32_t actual_position = motor_read_encoder();
+				//int32_t band = 1000;
+				//int32_t error = (desired_position - actual_position); // between -6000 and 6000
+//
+				//static int32_t sum_e_dt = 0;
+				//sum_e_dt += error*MAIN_TICK_MS;
+				//int32_t e_at_max_speed = 500;
+				//int32_t max_speed = 100;
+				//int32_t u_p = (max_speed*error)/e_at_max_speed;
+				//int32_t u_i = (5*max_speed*(sum_e_dt/1000))/e_at_max_speed;
+				//int32_t u = u_p + u_i;
+				//motor_velocity(u); // between -255 and +255
+//
+				//servo_position((float)(user_angle-28)/255);
+			//}
 			#endif
 
 			//
