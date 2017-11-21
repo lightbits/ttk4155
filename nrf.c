@@ -242,6 +242,8 @@ void nrf_write_payload(uint8_t *data, uint8_t count)
 void nrf_init()
 {
     nrf_pin_enable();
+    nrf_chip_disable();
+    nrf_spi_deselect();
 
     _delay_ms(15); // Power-on-reset delay is 10.3ms
 
