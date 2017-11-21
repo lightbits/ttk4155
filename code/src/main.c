@@ -118,11 +118,10 @@ void the_game()
 		//
 		uint8_t should_update_menu = 0;
 		{
-			static uint32_t t = 0;
-			t += timer_ms_elapsed() - t;
-			if (t > MENU_UPDATE_PERIOD_MS)
+			static uint32_t last_update = 0;
+			if (timer_ms_elapsed() - last_update > MENU_UPDATE_PERIOD_MS)
 			{
-				t = 0;
+				last_update = timer_ms_elapsed();
 				should_update_menu = 1;
 			}
 		}
