@@ -26,7 +26,7 @@ void timer_start()
     sei();
 
     // Enable interrupt on Compare Match A (since we use OCR1A)
-    set_bit(TIMSK1, OCIE1A);
+    set_bit(TIMSK, OCIE1A);
 
     // Set duration with TOP value
 
