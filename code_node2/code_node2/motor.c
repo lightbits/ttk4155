@@ -24,6 +24,13 @@ void motor_init()
     sei(); // enable interrupts
 }
 
+void motor_reset()
+{
+	clear_bit(MOTOR_PORT, MOTOR_PIN_RST);
+	_delay_us(20);
+	set_bit(MOTOR_PORT, MOTOR_PIN_RST);
+}
+
 // todo: We don't reset the encoder after reading. This means
 // that it could possibly overflow. However, we found that the
 // encoder maximum was about 8000 (moving carriage from left to

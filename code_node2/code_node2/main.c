@@ -15,8 +15,8 @@
 void the_game()
 {
 	// Note: the wireless remote is only compatible with the velocity regulator
-	#define USE_VELOCITY_REGULATOR       1
-	#define USE_SWITCHING_MODE_REGULATOR 0
+	#define USE_VELOCITY_REGULATOR 1
+	#define USE_POSITION_REGULATOR 0
 
 	uart_init(9600);
 	mcp_init();
@@ -116,10 +116,10 @@ void the_game()
 
 				servo_position((float)(user_position-28)/255);	
 			}
-			#elif USE_SWITCHING_MODE_REGULATOR==1
+			#elif USE_POSITION_REGULATOR==1
 			{
 				const int32_t ENCODER_MAX = 6000;
-				int32_t desired_position = ENCODER_MAX*(int32_t)(256-user_position)/255;
+				int32_t desired_position = ENCODER_MAX*(int32_t)(255-user_position)/255;
 				int32_t actual_position = motor_read_encoder();
 				int32_t band = 1000;
 				int32_t error = (desired_position - actual_position);
@@ -147,6 +147,10 @@ void the_game()
 				else
 					solenoid_pull();
 			}
+		}
+		else
+		{
+			motor_reset();
 		}
 
 		//

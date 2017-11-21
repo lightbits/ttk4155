@@ -21,6 +21,7 @@
 #define ENCODER_INPUT PINK
 #define MAX520_ADDRESS 0b0101000 // Assumes AD0,AD1,AD2 are grounded
 void    motor_init();
+void    motor_reset();
 int16_t motor_read_encoder();
 void    motor_velocity(int16_t velocity);
 #endif
