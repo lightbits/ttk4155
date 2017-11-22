@@ -107,14 +107,14 @@ void the_game()
 			//
 			#if USE_VELOCITY_REGULATOR==1
 			{
-				if (user_angle < 100)
+				if (user_angle < 127-10)
 					motor_velocity(100);
-				else if (user_angle > 150)
+				else if (user_angle > 127+10)
 					motor_velocity(-100);
 				else
 					motor_velocity(0);
 
-				servo_position((float)(user_position-28)/255);	
+				servo_position((float)(user_position-28)/255);
 			}
 			#elif USE_POSITION_REGULATOR==1
 			{
