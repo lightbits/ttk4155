@@ -41,7 +41,7 @@ uint8_t nrf_read_register(uint8_t register_address);
 #define NRF_CSN_PIN  3
 #define NRF_CE_PORT  C
 #define NRF_CE_PIN   2
-uint8_t nrf_spi_send(uint8_t data) { spi_send(data); }
+uint8_t nrf_spi_send(uint8_t data) { return spi_send(data); }
 void nrf_spi_select() { pin_low(NRF_CSN_PORT, NRF_CSN_PIN); }
 void nrf_spi_deselect() { pin_high(NRF_CSN_PORT, NRF_CSN_PIN); }
 void nrf_chip_enable() { pin_high(NRF_CE_PORT, NRF_CE_PIN); }
